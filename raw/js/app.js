@@ -260,6 +260,49 @@ class ARChemistryLab {
         const reaction = ReactionEngine.getReaction(beakerDataA.name, beakerDataB.name);
         this.showReactionEffect(pourer, target, reaction);
         this.showReactionPanel(reaction);
+
+        const productPos = {
+            x: (posA.x + posB.x) / 2,
+            y: posB.y,
+            z: (posA.z + posB.z) / 2
+        };
+
+        setTimeout(() => {
+            console.log("Transforming reactants...");
+            if (pourer.parentNode) pourer.parentNode.removeChild(pourer);
+            if (target.parentNode) target.parentNode.removeChild(target);
+
+            beakerDataA.isPlaced = false;
+            beakerDataB.isPlaced = false;
+
+            this.createProductBeaker(productPos, reaction);
+            this.isMixing = false;
+            this.showInstruction("Success! Reaction complete. Tap product to reset.");
+        }, 4000);
+    }
+
+    createProductBeaker(position, reaction) {
+        if (!reaction) return;
+        const scene = document.querySelector('#ar-content');
+        const product = document.createElement('a-entity');
+        product.setAttribute('class', 'beaker product');
+        product.setAttribute('position', position);
+        product.setAttribute('id', 'product-beaker');
+
+        product.innerHTML = `
+            <a-gltf-model src="#beaker-model" scale="25 25 25" data-raycastable></a-gltf-model>
+            <a-cylinder radius="0.05" height="0.15" position="0 0.07 0" color="#ffffff" opacity="0.7" data-raycastable></a-cylinder>
+            <a-text value="Product:\n${reaction.products}" position="0 0.4 0" align="center" color="white" width="3" data-raycastable></a-text>
+            <a-text value="(Tap to Reset Lab)" position="0 -0.15 0" align="center" color="#aaa" width="1.5"></a-text>
+        `;
+
+        scene.appendChild(product);
+
+        // Reset listener
+        product.addEventListener('click', (e) => {
+            console.log("Resetting lab...");
+            location.reload();
+        });
     }
 
     showReactionPanel(reaction) {
