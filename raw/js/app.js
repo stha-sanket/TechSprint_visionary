@@ -262,15 +262,16 @@ class ARChemistryLab {
         const ux = dx / dist;
         const uz = dz / dist;
 
-        // Calculate position 1 unit away from acid
-        const targetPosX = posAcid.x - ux * 1.0;
-        const targetPosZ = posAcid.z - uz * 1.0;
+        const config = window.LAB_CONFIG.interaction;
+        const pourDisp = config.pourDisplacement || 0.4;
+        const targetPosX = posAcid.x - ux * pourDisp;
+        const targetPosZ = posAcid.z - uz * pourDisp;
 
-        // Stage 1: Move Base to 1 unit distance from Acid
+        // Stage 1: Move Base
         pourer.setAttribute('animation__move', {
             property: 'position',
             to: `${targetPosX} ${posBase.y} ${targetPosZ}`,
-            dur: 1000,
+            dur: config.moveDuration || 1000,
             easing: 'easeInOutQuad'
         });
 
@@ -279,27 +280,27 @@ class ARChemistryLab {
             if (!pourer) return;
             pourer.setAttribute('animation__up', {
                 property: 'position',
-                to: `${targetPosX} ${posBase.y + 0.3} ${targetPosZ}`,
-                dur: 800,
+                to: `${targetPosX} ${posBase.y + (config.liftHeight || 0.3)} ${targetPosZ}`,
+                dur: config.liftDuration || 800,
                 easing: 'easeOutQuad'
             });
-        }, 1000);
+        }, config.moveDuration || 1000);
 
-        // Stage 3: Tilt exactly 45 degrees towards Acid
+        // Stage 3: Tilt
         const angleRad = Math.atan2(dx, dz);
         setTimeout(() => {
             if (!pourer) return;
-            const tiltAngle = 45;
+            const tiltAngle = config.tiltAngle || 45;
             const tiltAroundX = Math.cos(angleRad) * tiltAngle;
             const tiltAroundZ = -Math.sin(angleRad) * tiltAngle;
 
             pourer.setAttribute('animation__tilt', {
                 property: 'rotation',
                 to: `${tiltAroundX} 0 ${tiltAroundZ}`,
-                dur: 1000,
+                dur: config.tiltDuration || 1000,
                 easing: 'easeInQuad'
             });
-        }, 1800);
+        }, (config.moveDuration || 1000) + (config.liftDuration || 800));
 
         const reaction = ReactionEngine.getReaction(beakerBase.name, beakerAcid.name);
         this.showReactionEffect(pourer, target, reaction);
@@ -321,7 +322,7 @@ class ARChemistryLab {
 
             this.createProductBeaker(productPos, reaction);
             this.isMixing = false;
-        }, 4000);
+        }, config.reactionDelay || 4000);
     }
 
     createProductBeaker(position, reaction) {
