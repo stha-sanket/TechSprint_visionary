@@ -7,10 +7,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
     <script src="https://unpkg.com/aframe-xr@latest/dist/aframe-xr.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-    <h1>AR Chemistry Lab</h1>
+    <div id="loading">
+        <h2>🔬 AR Chemistry Lab</h2>
+        <p>Allow camera access to start</p>
+        <button id="start-ar">Start AR Experience</button>
+    </div>
+
+    <a-scene xr-mode-ui="enabled: false" xrweb="enabled: true">
+        <a-entity id="rig" position="0 1.6 0">
+            <a-camera id="camera" user-height="0" wasd-controls="enabled: false">
+                <a-cursor fuse="false" raycaster="objects: [data-raycastable]; far: 20" visible="false"></a-cursor>
+            </a-camera>
+        </a-entity>
+
+        <!-- Lights -->
+        <a-entity light="type: ambient; intensity: 0.8"></a-entity>
+        <a-entity light="type: directional; intensity: 0.6" position="1 2 1"></a-entity>
+    </a-scene>
 </body>
 
 </html>
