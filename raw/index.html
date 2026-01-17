@@ -27,6 +27,11 @@
             </a-camera>
         </a-entity>
         <a-entity id="ar-content"></a-entity>
+        <a-entity id="ar-plane" class="ar-plane" data-raycastable geometry="primitive: plane; width: 50; height: 50"
+            rotation="-90 0 0" position="0 0 0"
+            material="opacity: 0.01; color: #444; transparent: true; visible: false"></a-entity>
+        <a-ring id="reticle" radius-inner="0.55" radius-outer="0.65" rotation="-90 0 0" color="#3498db" visible="false"
+            animation="property: scale; to: 1.1 1.1 1.1; dir: alternate; dur: 1000; loop: true"></a-ring>
         <a-entity id="ui" position="0 0 -2">
             <a-text id="instruction" value="Tap to place beakers" position="0 1.5 0" color="white"
                 align="center"></a-text>
