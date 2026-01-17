@@ -195,11 +195,27 @@ class ARChemistryLab {
             
             <!-- The 3D Beaker Model (Glass) -->
             <a-gltf-model src="${modelId}" scale="${config.scale.x} ${config.scale.y} ${config.scale.z}"></a-gltf-model>
-            
-            <a-text class="beaker-label" value="${beakerData.name}\n${beakerData.label}"
-                   position="0 ${config.labelY} 0" align="center" color="white" width="${config.labelWidth}">
+
+            <!-- Temporary Chemical Label -->
+            <a-text class="beaker-label"
+                   value="${beakerData.name}\n${beakerData.label}"
+                   position="0 ${config.label ? config.label.y : -0.2} ${config.label ? config.label.z : 0.2}" 
+                   align="center" 
+                   color="${config.label ? config.label.color : '#ffffff'}" 
+                   width="${config.label ? config.label.width : 2.5}"
+                   scale="${config.label ? config.label.scale : '1.5 1.5 1.5'}"
+                   font="mozillavr"
+                   wrap-count="15"
+                   background="color: ${config.label ? config.label.backgroundColor : '#222'}; opacity: ${config.label ? config.label.backgroundOpacity : 0.7}"
+                   padding="0.05">
             </a-text>
         `;
+
+        // Hide label after a few seconds
+        setTimeout(() => {
+            const label = beaker.querySelector('.beaker-label');
+            if (label) label.setAttribute('visible', false);
+        }, config.label ? config.label.displayDuration : 3000);
 
         scene.appendChild(beaker);
 
@@ -344,9 +360,29 @@ class ARChemistryLab {
         const config = window.LAB_CONFIG.beaker;
         product.innerHTML = `
             <a-gltf-model src="#salt-model" scale="${config.scale.x} ${config.scale.y} ${config.scale.z}"></a-gltf-model>
-            <a-text value="Product:\n${reaction.products}" position="0 ${config.labelY} 0" align="center" color="white" width="${config.labelWidth}"></a-text>
-            <a-text value="(Tap to Reset Lab)" position="0 -0.05 0" align="center" color="#aaa" width="0.5"></a-text>
+            
+            <!-- Temporary Product Label -->
+            <a-text class="beaker-label"
+                   value="Product:\n${reaction.products}" 
+                   position="0 ${config.label ? config.label.y : -0.2} ${config.label ? config.label.z : 0.2}" 
+                   align="center" 
+                   color="${config.label ? config.label.color : '#ffffff'}" 
+                   width="${config.label ? config.label.width : 2.5}"
+                   scale="${config.label ? config.label.scale : '1.5 1.5 1.5'}"
+                   font="mozillavr"
+                   wrap-count="20"
+                   background="color: ${config.label ? config.label.backgroundColor : '#222'}; opacity: ${config.label ? config.label.backgroundOpacity : 0.7}"
+                   padding="0.05">
+            </a-text>
+
+            <a-text value="(Tap to Reset Lab)" position="0 -0.1 0" align="center" color="#aaa" width="0.8"></a-text>
         `;
+
+        // Hide label after a few seconds
+        setTimeout(() => {
+            const label = product.querySelector('.beaker-label');
+            if (label) label.setAttribute('visible', false);
+        }, config.label ? config.label.displayDuration : 3000);
 
         scene.appendChild(product);
 

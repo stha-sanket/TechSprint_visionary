@@ -11,8 +11,16 @@ window.LAB_CONFIG = {
         scale: { x: 0.5, y: 0.5, z: 0.5 },
         hitBoxRadius: 0.5,
         hitBoxHeight: 0.1,
-        labelY: 0.2,
-        labelWidth: 1
+        label: {
+            y: -0.2,            // Position below the beaker
+            z: 0.4,             // Moved further ahead (Z-index)
+            width: 2.5,        // Text width
+            scale: "1.5 1.5 1.5", // Text size
+            color: "#ffffff",
+            backgroundColor: "#222",
+            backgroundOpacity: 0.7,
+            displayDuration: 4000 // How long to show the label (ms)
+        }
     },
 
     // Interaction Logic Configuration
