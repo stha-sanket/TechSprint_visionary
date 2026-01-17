@@ -17,6 +17,6 @@ window.LAB_CONFIG = {
 
     // Interaction Logic Configuration
     interaction: {
-        mixingDistance: 1 // Threshold to trigger chemical reaction
+        mixingDistance: 0.5 // Threshold to trigger chemical reaction
     }
 };
