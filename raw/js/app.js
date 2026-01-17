@@ -183,6 +183,147 @@ class ARChemistryLab {
         }
     }
 
+    checkForMixing(beakerA, beakerDataA) {
+        if (this.isMixing) return;
+
+        const posA = beakerA.getAttribute('position');
+
+        this.beakers.forEach(beakerB => {
+            if (!beakerB.isPlaced || beakerB.id === beakerDataA.id) return;
+
+            const posB = beakerB.element.getAttribute('position');
+            const distance = Math.sqrt(
+                Math.pow(posA.x - posB.x, 2) +
+                Math.pow(posA.z - posB.z, 2)
+            );
+
+            // If beakers are close enough
+            if (distance < 0.25) {
+                this.mixChemicals(beakerDataA, beakerB);
+            }
+        });
+    }
+
+    mixChemicals(beakerDataA, beakerDataB) {
+        this.isMixing = true;
+
+        const pourer = beakerDataA.element;
+        const target = beakerDataB.element;
+
+        const posA = pourer.getAttribute('position');
+        const posB = target.getAttribute('position');
+
+        const dx = posB.x - posA.x;
+        const dz = posB.z - posA.z;
+
+        // Reset held state
+        if (this.heldBeaker) {
+            this.heldBeaker.removeAttribute('animation');
+            this.heldBeaker.setAttribute('scale', '1 1 1');
+            this.heldBeaker = null;
+            this.heldBeakerData = null;
+        }
+
+        console.log("Starting animation sequence...");
+
+        const angleRad = Math.atan2(dx, dz);
+
+        // Stage 1: Move Up
+        pourer.setAttribute('animation__up', {
+            property: 'position',
+            to: `${posA.x} ${posA.y + 0.3} ${posA.z}`,
+            dur: 800,
+            easing: 'easeOutQuad'
+        });
+
+        // Stage 2: Tilt towards target
+        setTimeout(() => {
+            const tiltAngle = 55;
+            const tiltAroundX = Math.cos(angleRad) * tiltAngle;
+            const tiltAroundZ = -Math.sin(angleRad) * tiltAngle;
+
+            pourer.setAttribute('animation__tilt', {
+                property: 'rotation',
+                to: `${tiltAroundX} 0 ${tiltAroundZ}`,
+                dur: 1000,
+                easing: 'easeInQuad'
+            });
+
+            pourer.setAttribute('animation__closer', {
+                property: 'position',
+                to: `${posA.x + dx * 0.4} ${posA.y + 0.3} ${posA.z + dz * 0.4}`,
+                dur: 1000,
+                easing: 'easeInQuad'
+            });
+        }, 800);
+
+        const reaction = ReactionEngine.getReaction(beakerDataA.name, beakerDataB.name);
+        this.showReactionEffect(pourer, target, reaction);
+        this.showReactionPanel(reaction);
+    }
+
+    showReactionPanel(reaction) {
+        if (!reaction) return;
+        const panel = document.querySelector('#reaction-panel');
+        const text = document.querySelector('#reaction-text');
+
+        text.setAttribute('value',
+            `${reaction.name}\n\n${reaction.description}\n\nProducts: ${reaction.products}`
+        );
+        panel.setAttribute('visible', 'true');
+
+        setTimeout(() => {
+            panel.setAttribute('visible', 'false');
+        }, 5000);
+    }
+
+    showReactionEffect(beakerElA, beakerElB, reaction) {
+        if (!reaction) return;
+        const posA = beakerElA.getAttribute('position');
+        const posB = beakerElB.getAttribute('position');
+        const centerPos = {
+            x: (posA.x + posB.x) / 2,
+            y: (posA.y + posB.y) / 2 + 0.2,
+            z: (posA.z + posB.z) / 2
+        };
+
+        const effect = document.createElement('a-entity');
+        effect.setAttribute('position', centerPos);
+
+        if (reaction.effect === 'confetti') {
+            const colors = ['#f1c40f', '#e67e22', '#e74c3c', '#9b59b6', '#3498db', '#2ecc71'];
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('a-plane');
+                particle.setAttribute('width', '0.02');
+                particle.setAttribute('height', '0.04');
+                particle.setAttribute('color', colors[Math.floor(Math.random() * colors.length)]);
+                particle.setAttribute('material', 'side: double');
+
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI / 2;
+                const r = 0.5 + Math.random() * 0.5;
+                const vx = r * Math.sin(phi) * Math.cos(theta);
+                const vy = r * Math.cos(phi);
+                const vz = r * Math.sin(phi) * Math.sin(theta);
+
+                particle.setAttribute('animation__pos', {
+                    property: 'position',
+                    from: '0 0 0',
+                    to: `${vx} ${vy} ${vz}`,
+                    dur: 1000 + Math.random() * 1000,
+                    easing: 'easeOutQuad'
+                });
+
+                effect.appendChild(particle);
+            }
+        }
+
+        document.querySelector('#ar-content').appendChild(effect);
+        setTimeout(() => {
+            if (effect.parentNode) effect.parentNode.removeChild(effect);
+        }, 3000);
+    }
+
     startReticleLoop() {
         const scene = document.querySelector('a-scene');
         const update = () => {
@@ -199,6 +340,7 @@ class ARChemistryLab {
                         // If holding a beaker, move it to reticle position
                         if (this.heldBeaker && !this.isMixing) {
                             this.heldBeaker.setAttribute('position', planeHit.point);
+                            this.checkForMixing(this.heldBeaker, this.heldBeakerData);
                         }
                     } else if (!this.heldBeaker) {
                         // Position reticle in front...
