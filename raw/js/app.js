@@ -194,15 +194,14 @@ class ARChemistryLab {
         }
     }
 
-    checkForMixing(beakerA, beakerDataA) {
-        if (this.isMixing) return;
+    checkForMixing(movingBeakerData) {
+        if (this.isMixing || !movingBeakerData.isPlaced) return;
 
-        const posA = beakerA.getAttribute('position');
+        this.beakers.forEach((otherBeakerData) => {
+            if (movingBeakerData === otherBeakerData || !otherBeakerData.isPlaced) return;
 
-        this.beakers.forEach(beakerB => {
-            if (!beakerB.isPlaced || beakerB.id === beakerDataA.id) return;
-
-            const posB = beakerB.element.getAttribute('position');
+            const posA = movingBeakerData.element.getAttribute('position');
+            const posB = otherBeakerData.element.getAttribute('position');
             const distance = Math.sqrt(
                 Math.pow(posA.x - posB.x, 2) +
                 Math.pow(posA.z - posB.z, 2)
@@ -211,27 +210,17 @@ class ARChemistryLab {
             // If beakers are close enough
             const threshold = window.LAB_CONFIG.interaction.mixingDistance;
             if (distance < threshold) {
-                this.mixChemicals(beakerDataA, beakerB);
+                this.mixChemicals(movingBeakerData, otherBeakerData);
             }
         });
     }
 
-    mixChemicals(beakerDataA, beakerDataB) {
+    mixChemicals(pourerData, targetData) {
         if (this.isMixing) return;
         this.isMixing = true;
 
-        // Force 'B' (Base) to be the pourer and 'A' (Acid) to be the target
-        let beakerBase, beakerAcid;
-        if (beakerDataA.id === 'B') {
-            beakerBase = beakerDataA;
-            beakerAcid = beakerDataB;
-        } else {
-            beakerBase = beakerDataB;
-            beakerAcid = beakerDataA;
-        }
-
-        const pourer = beakerBase.element;
-        const target = beakerAcid.element;
+        const pourer = pourerData.element;
+        const target = targetData.element;
 
         if (!pourer || !target) {
             console.log("Error: Missing beaker elements");
@@ -239,14 +228,14 @@ class ARChemistryLab {
             return;
         }
 
-        // Get static copies of positions to prevent reference issues
-        const pB = pourer.getAttribute('position');
-        const pA = target.getAttribute('position');
-        const posBase = { x: pB.x, y: pB.y, z: pB.z };
-        const posAcid = { x: pA.x, y: pA.y, z: pA.z };
+        // Get static copies of positions
+        const pP = pourer.getAttribute('position');
+        const pT = target.getAttribute('position');
+        const posPourer = { x: pP.x, y: pP.y, z: pP.z };
+        const posTarget = { x: pT.x, y: pT.y, z: pT.z };
 
-        const dx = posAcid.x - posBase.x;
-        const dz = posAcid.z - posBase.z;
+        const dx = posTarget.x - posPourer.x;
+        const dz = posTarget.z - posPourer.z;
 
         // Reset held state
         if (this.heldBeaker) {
@@ -256,7 +245,7 @@ class ARChemistryLab {
             this.heldBeakerData = null;
         }
 
-        console.log(`Mix Start: Base(${posBase.x.toFixed(2)}) -> Acid(${posAcid.x.toFixed(2)})`);
+        console.log(`Mix Start: ${pourerData.name} -> ${targetData.name}`);
 
         const dist = Math.sqrt(dx * dx + dz * dz) || 0.001;
         const ux = dx / dist;
@@ -264,23 +253,23 @@ class ARChemistryLab {
 
         const config = window.LAB_CONFIG.interaction;
         const pourDisp = config.pourDisplacement || 0.4;
-        const targetPosX = posAcid.x - ux * pourDisp;
-        const targetPosZ = posAcid.z - uz * pourDisp;
+        const targetPosX = posTarget.x - ux * pourDisp;
+        const targetPosZ = posTarget.z - uz * pourDisp;
 
-        // Stage 1: Move Base to Acid's vertical level at a distance
+        // Stage 1: Move Pourer to Target's vertical level at a distance
         pourer.setAttribute('animation__move', {
             property: 'position',
-            to: `${targetPosX} ${posAcid.y} ${targetPosZ}`,
+            to: `${targetPosX} ${posTarget.y} ${targetPosZ}`,
             dur: config.moveDuration || 1000,
             easing: 'easeInOutQuad'
         });
 
-        // Stage 2: Move Up relative to Acid
+        // Stage 2: Move Up relative to Target
         setTimeout(() => {
             if (!pourer) return;
             pourer.setAttribute('animation__up', {
                 property: 'position',
-                to: `${targetPosX} ${posAcid.y + (config.liftHeight || 0.3)} ${targetPosZ}`,
+                to: `${targetPosX} ${posTarget.y + (config.liftHeight || 0.3)} ${targetPosZ}`,
                 dur: config.liftDuration || 800,
                 easing: 'easeOutQuad'
             });
@@ -302,14 +291,14 @@ class ARChemistryLab {
             });
         }, (config.moveDuration || 1000) + (config.liftDuration || 800));
 
-        const reaction = ReactionEngine.getReaction(beakerBase.name, beakerAcid.name);
+        const reaction = ReactionEngine.getReaction(pourerData.name, targetData.name);
         this.showReactionEffect(pourer, target, reaction);
         this.showReactionPanel(reaction);
 
         const productPos = {
-            x: (posBase.x + posAcid.x) / 2,
-            y: posAcid.y,
-            z: (posBase.z + posAcid.z) / 2
+            x: (posPourer.x + posTarget.x) / 2,
+            y: posTarget.y,
+            z: (posPourer.z + posTarget.z) / 2
         };
 
         setTimeout(() => {
@@ -317,8 +306,8 @@ class ARChemistryLab {
             if (pourer && pourer.parentNode) pourer.parentNode.removeChild(pourer);
             if (target && target.parentNode) target.parentNode.removeChild(target);
 
-            beakerBase.isPlaced = false;
-            beakerAcid.isPlaced = false;
+            pourerData.isPlaced = false;
+            targetData.isPlaced = false;
 
             this.createProductBeaker(productPos, reaction);
             this.isMixing = false;
@@ -425,9 +414,9 @@ class ARChemistryLab {
                         this.reticle.setAttribute('visible', true);
 
                         // If holding a beaker, move it to reticle position
-                        if (this.heldBeaker && !this.isMixing) {
+                        if (this.heldBeaker && this.heldBeakerData) {
                             this.heldBeaker.setAttribute('position', planeHit.point);
-                            this.checkForMixing(this.heldBeaker, this.heldBeakerData);
+                            this.checkForMixing(this.heldBeakerData);
                         }
                     } else if (!this.heldBeaker) {
                         // Position reticle in front...
