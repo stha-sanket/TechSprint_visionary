@@ -6,8 +6,8 @@ import { uploadToCloudinary } from "../services/cloudinary.service.js";
 
 export const getChaptersBySubject = async (req, res) => {
   try {
-    const { subjectId } = req.params;
-    const chapters = await Chapter.find({ subject: subjectId });
+    const { subjectName } = req.params;
+    const chapters = await Chapter.find({ subject: subjectName });
     res.status(200).json(chapters);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -17,14 +17,14 @@ export const getChaptersBySubject = async (req, res) => {
 export const createChapter = async (req, res) => {
   try {
     const { name, description, chapterNumber, subject, topic } = req.body;
-    let threeDModelUrl = "";
+    let threeDModelUrls = [];
 
-    if (req.file) {
-      const result = await uploadToCloudinary(
-        req.file.buffer,
-        "chapters/models",
+    if (req.files && req.files.length > 0) {
+      const uploadPromises = req.files.map((file) =>
+        uploadToCloudinary(file.buffer, "chapters/models"),
       );
-      threeDModelUrl = result.secure_url;
+      const results = await Promise.all(uploadPromises);
+      threeDModelUrls = results.map((result) => result.secure_url);
     }
 
     const chapter = await Chapter.create({
@@ -33,7 +33,7 @@ export const createChapter = async (req, res) => {
       chapterNumber,
       subject,
       topic,
-      threeDModel: threeDModelUrl,
+      threeDModels: threeDModelUrls,
     });
     res.status(201).json(chapter);
   } catch (error) {

@@ -10,7 +10,7 @@ import { uploadThreeDModel } from "../middlewares/multer.middleware.js";
 const router = express.Router();
 
 // Chapter routes
-router.get("/subjects/:subjectId/chapters", getChaptersBySubject);
+router.get("/subjects/:subjectName/chapters", getChaptersBySubject);
 router.post("/chapters", uploadThreeDModel, createChapter);
 
 // Assessment routes
