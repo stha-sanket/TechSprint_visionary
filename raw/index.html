@@ -40,7 +40,8 @@
     </div>
 
     <!-- AR Scene -->
-    <a-scene xr-mode-ui="enabled: false" webxr="optionalFeatures: dom-overlay; overlayElement: #ar-ui-container">
+    <a-scene xr-mode-ui="enabled: false" webxr="optionalFeatures: dom-overlay; overlayElement: #ar-ui-container"
+        gltf-model="dracoDecoderPath: https://www.gstatic.com/draco/versioned/decoders/1.5.6/;">
         <a-assets>
             <a-asset-item id="beaker-model" src="assets/models/beaker.glb"></a-asset-item>
             <a-asset-item id="acid-model" src="assets/models/acid_beaker.glb"></a-asset-item>
