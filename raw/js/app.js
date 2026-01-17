@@ -79,6 +79,11 @@ class ARChemistryLab {
                 if (this.reticle) this.reticle.setAttribute('visible', true);
                 const plane = document.querySelector('#ar-plane');
                 if (plane) plane.setAttribute('visible', true);
+
+                // Show AR Controls
+                const controls = document.getElementById('ar-controls');
+                if (controls) controls.style.display = 'flex';
+
                 console.log("Entered AR Mode");
             }
         });
@@ -89,6 +94,10 @@ class ARChemistryLab {
             if (this.reticle) this.reticle.setAttribute('visible', false);
             const plane = document.querySelector('#ar-plane');
             if (plane) plane.setAttribute('visible', false);
+
+            // Hide AR Controls
+            const controls = document.getElementById('ar-controls');
+            if (controls) controls.style.display = 'none';
         });
 
         document.getElementById('start-ar').addEventListener('click', () => {
@@ -98,6 +107,16 @@ class ARChemistryLab {
 
     setupEventListeners() {
         const scene = document.querySelector('a-scene');
+
+        // Restart Lab button
+        const restartBtn = document.getElementById('restart-lab');
+        if (restartBtn) {
+            restartBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Don't trigger scene click
+                console.log("Restarting lab...");
+                location.reload();
+            });
+        }
 
         // Tap to place or pick/drop beakers
         scene.addEventListener('click', (e) => {
