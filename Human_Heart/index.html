@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Heart AR – Realistic Beat</title>
+
+  <!-- A-Frame -->
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+
+  <!-- AR.js -->
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
+
+  <style>
+    body { margin: 0; overflow: hidden; }
+
+    #playBtn {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 15px 30px;
+      font-size: 18px;
+      background: linear-gradient(135deg, #ff4444, #cc0000);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      z-index: 999;
+      box-shadow: 0 4px 15px rgba(255, 68, 68, 0.4);
+    }
+    #playBtn:active { transform: translateX(-50%) scale(0.95); }
+  </style>
+
+  <script>
+    // Drag + 2-finger rotate
+    AFRAME.registerComponent('drag-rotate', {
+      init: function () {
+        this.dragging = false;
+        this.rotating = false;
+        this.startTouch = null;
+        this.startRotTouch = null;
+
+        const el = this.el;
+        const scene = el.sceneEl;
+
+        scene.addEventListener('touchstart', (e) => {
+          if (e.touches.length === 1) {
+            this.dragging = true;
+            this.rotating = false;
+            this.startTouch = e.touches[0];
+          } else if (e.touches.length === 2) {
+            this.dragging = false;
+            this.rotating = true;
+            this.startRotTouch = {
+              x: (e.touches[0].clientX + e.touches[1].clientX)/2,
+              y: (e.touches[0].clientY + e.touches[1].clientY)/2
+            };
+            this.startYRotation = el.getAttribute('rotation').y;
+            this.startXRotation = el.getAttribute('rotation').x;
+          }
+        });
+
+        scene.addEventListener('touchend', () => {
+          this.dragging = false;
+          this.rotating = false;
+        });
+
+        scene.addEventListener('touchmove', (e) => {
+          if (this.dragging && e.touches.length === 1) {
+            const touch = e.touches[0];
+            const dx = (touch.clientX - this.startTouch.clientX) * 0.005;
+            const dz = (touch.clientY - this.startTouch.clientY) * 0.005;
+            const pos = el.getAttribute('position');
+            el.setAttribute('position', {
+              x: pos.x + dx,
+              y: pos.y,
+              z: pos.z + dz
+            });
+            this.startTouch = touch;
+          }
+
+          if (this.rotating && e.touches.length === 2) {
+            const currentTouch = {
+              x: (e.touches[0].clientX + e.touches[1].clientX)/2,
+              y: (e.touches[0].clientY + e.touches[1].clientY)/2
+            };
+            const deltaX = (currentTouch.x - this.startRotTouch.x) * 0.5;
+            const deltaY = (currentTouch.y - this.startRotTouch.y) * 0.5;
+
+            el.setAttribute('rotation', {
+              x: this.startXRotation - deltaY,
+              y: this.startYRotation + deltaX,
+              z: 0
+            });
+          }
+        });
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <button id="playBtn">🎵 Play Heartbeat</button>
+
+  <a-scene embedded arjs="sourceType: webcam;" vr-mode-ui="enabled: false">
+
+    <a-light type="ambient" intensity="0.9"></a-light>
+    <a-light type="directional" position="1 2 1" intensity="1"></a-light>
+
+    <a-marker preset="hiro">
+
+      <a-entity id="heartEntity"
+                gltf-model="heart.glb"
+                scale="10 10 10"
+                position="0 0.2 0"
+                rotation="90 180 0"
+                drag-rotate>
+
+        <!-- Realistic beating using keyframes -->
+        <a-animation 
+          attribute="scale"
+          dur="800"
+          repeat="indefinite"
+          easing="ease-in-out"
+          keyframes="0: 10 10 10; 0.3: 9.7 9.7 9.7; 0.5: 11 11 11; 0.8: 10 10 10; 1: 10 10 10">
+        </a-animation>
+
+        <a-sound id="heartbeatSound"
+                 src="heartbeat.mp3"
+                 autoplay="false"
+                 loop="true"
+                 positional="true"
+                 volume="1"></a-sound>
+      </a-entity>
+
+    </a-marker>
+
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <script>
+    const playBtn = document.getElementById('playBtn');
+    const heartbeatSound = document.querySelector('#heartbeatSound');
+
+    playBtn.addEventListener('click', () => {
+      const soundComp = heartbeatSound.components.sound;
+      if (soundComp.isPlaying) {
+        soundComp.pauseSound();
+        playBtn.textContent = '🎵 Play Heartbeat';
+      } else {
+        soundComp.playSound();
+        playBtn.textContent = '⏸️ Pause Heartbeat';
+      }
+    });
+  </script>
+</body>
+</html>
