@@ -1,6 +1,6 @@
-const express = require("express");
-const mongoose = require("mongoose");
-require("dotenv").config();
+import express from "express";
+import mongoose from "mongoose";
+import "dotenv/config";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,8 +15,11 @@ mongoose
   .catch((err) => console.error("Could not connect to MongoDB:", err));
 
 // Routes
+import studentRoutes from "./routes/student.routes.js";
+app.use("/api/students", studentRoutes);
+
 app.get("/", (req, res) => {
-  res.send("Hello from Learn.ai");
+  res.send(`${process.env.APP_NAME}`);
 });
 
 // Start Server
