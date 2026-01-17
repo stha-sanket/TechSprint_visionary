@@ -1,4 +1,4 @@
-const LoginPage = () => {
+const SignupPage = () => {
   return (
     <>
       <div className="w-screen h-screen bg-[#e0e5ec] m-0 p-0">
@@ -15,9 +15,20 @@ const LoginPage = () => {
           </div>
           <div className="bg-[#e0e5ec] w-full h-[80%] rounded-t-[3rem] px-8 pt-12 flex flex-col items-center shadow-[0_-8px_20px_rgba(163,177,198,0.4)]">
             <h2 className="text-center font-bold text-lg mb-8 text-gray-700">
-              Please Log in to continue
+              Create an Account
             </h2>
             <form className="w-full flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-semibold text-gray-600 ml-1">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter your name"
+                  className="w-full px-4 py-3 rounded-2xl bg-[#e0e5ec] shadow-[inset_-2px_-2px_5px_rgba(255,255,255,0.7),inset_2px_2px_5px_rgba(0,0,0,0.1)] focus:outline-none text-gray-700 placeholder:text-gray-400 transition-all"
+                />
+              </div>
+
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-semibold text-gray-600 ml-1">
                   Email
@@ -38,18 +49,10 @@ const LoginPage = () => {
                   placeholder="Enter your password"
                   className="w-full px-4 py-3 rounded-2xl bg-[#e0e5ec] shadow-[inset_-2px_-2px_5px_rgba(255,255,255,0.7),inset_2px_2px_5px_rgba(0,0,0,0.1)] focus:outline-none text-gray-700 placeholder:text-gray-400 transition-all"
                 />
-                <div className="flex justify-end">
-                  <a
-                    href="/forgot-password"
-                    className="text-xs text-blue-400 font-medium hover:text-blue-500 transition-colors"
-                  >
-                    Forgot Password?
-                  </a>
-                </div>
               </div>
 
               <button className="w-full bg-gray-900 text-white font-bold py-3.5 rounded-2xl shadow-[8px_8px_16px_rgba(163,177,198,0.6),-4px_-4px_12px_rgba(255,255,255,0.5)] active:scale-95 transition-all mt-4 text-lg">
-                Log In
+                Sign Up
               </button>
             </form>
 
@@ -83,12 +86,9 @@ const LoginPage = () => {
               </button>
 
               <p className="text-sm text-gray-600">
-                Don't have an account?{" "}
-                <a
-                  href="/signup"
-                  className="text-blue-400 font-bold hover:underline"
-                >
-                  Sign Up
+                Already have an account?{" "}
+                <a href="/" className="text-blue-400 font-bold hover:underline">
+                  Log In
                 </a>
               </p>
             </div>
@@ -99,4 +99,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default SignupPage;
