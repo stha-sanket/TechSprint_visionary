@@ -8,7 +8,7 @@ window.LAB_CONFIG = {
 
     // Beaker (Acid, Base, Product) Configuration
     beaker: {
-        scale: { x: 1, y: 1, z: 1 },
+        scale: { x: 0.5, y: 0.5, z: 0.5 },
         hitBoxRadius: 0.2,
         hitBoxHeight: 0.1,
         labelY: 0.05,
@@ -17,6 +17,6 @@ window.LAB_CONFIG = {
 
     // Interaction Logic Configuration
     interaction: {
-        mixingDistance: 0.02 // Threshold to trigger chemical reaction
+        mixingDistance: 1 // Threshold to trigger chemical reaction
     }
 };
