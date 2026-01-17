@@ -12,6 +12,26 @@
 </head>
 
 <body>
+    <!-- AR UI Layer (WebXR DOM Overlay) -->
+    <div id="ar-ui-container">
+        <!-- AR Controls -->
+        <div id="ar-controls" style="display: none;">
+            <button id="restart-lab" class="ar-btn" title="Restart Lab">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                    <path d="M21 3v5h-5"></path>
+                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                    <path d="M3 21v-5h5"></path>
+                </svg>
+                <span class="text">Restart</span>
+            </button>
+        </div>
+
+        <!-- Debug Overlay -->
+        <div id="debug-overlay"></div>
+    </div>
+
     <!-- Loading Screen -->
     <div id="loading">
         <h2>🔬 AR Chemistry Lab</h2>
@@ -20,7 +40,8 @@
     </div>
 
     <!-- AR Scene -->
-    <a-scene xr-mode-ui="enabled: false" xrweb="enabled: true">
+    <a-scene xr-mode-ui="enabled: false" webxr="optionalFeatures: dom-overlay; overlayElement: #ar-ui-container"
+        gltf-model="dracoDecoderPath: https://www.gstatic.com/draco/versioned/decoders/1.5.6/;">
         <a-assets>
             <a-asset-item id="beaker-model" src="assets/models/beaker.glb"></a-asset-item>
             <a-asset-item id="acid-model" src="assets/models/acid_beaker.glb"></a-asset-item>
@@ -60,8 +81,7 @@
         <a-entity light="type: directional; intensity: 0.6" position="1 2 1"></a-entity>
     </a-scene>
 
-    <!-- Debug Overlay -->
-    <div id="debug-overlay"></div>
+    <!-- Debug Overlay removed from here, moved to ar-ui-container -->
 
     <script src="js/config.js"></script>
     <script src="js/reactions.js"></script>

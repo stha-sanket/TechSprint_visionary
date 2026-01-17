@@ -79,6 +79,11 @@ class ARChemistryLab {
                 if (this.reticle) this.reticle.setAttribute('visible', true);
                 const plane = document.querySelector('#ar-plane');
                 if (plane) plane.setAttribute('visible', true);
+
+                // Show AR Controls
+                const controls = document.getElementById('ar-controls');
+                if (controls) controls.style.display = 'flex';
+
                 console.log("Entered AR Mode");
             }
         });
@@ -89,6 +94,10 @@ class ARChemistryLab {
             if (this.reticle) this.reticle.setAttribute('visible', false);
             const plane = document.querySelector('#ar-plane');
             if (plane) plane.setAttribute('visible', false);
+
+            // Hide AR Controls
+            const controls = document.getElementById('ar-controls');
+            if (controls) controls.style.display = 'none';
         });
 
         document.getElementById('start-ar').addEventListener('click', () => {
@@ -98,6 +107,16 @@ class ARChemistryLab {
 
     setupEventListeners() {
         const scene = document.querySelector('a-scene');
+
+        // Restart Lab button
+        const restartBtn = document.getElementById('restart-lab');
+        if (restartBtn) {
+            restartBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Don't trigger scene click
+                console.log("Restarting lab...");
+                location.reload();
+            });
+        }
 
         // Tap to place or pick/drop beakers
         scene.addEventListener('click', (e) => {
@@ -176,11 +195,27 @@ class ARChemistryLab {
             
             <!-- The 3D Beaker Model (Glass) -->
             <a-gltf-model src="${modelId}" scale="${config.scale.x} ${config.scale.y} ${config.scale.z}"></a-gltf-model>
-            
-            <a-text class="beaker-label" value="${beakerData.name}\n${beakerData.label}"
-                   position="0 ${config.labelY} 0" align="center" color="white" width="${config.labelWidth}">
+
+            <!-- Temporary Chemical Label -->
+            <a-text class="beaker-label"
+                   value="${beakerData.name}\n${beakerData.label}"
+                   position="0 ${config.label ? config.label.y : -0.2} ${config.label ? config.label.z : 0.2}" 
+                   align="center" 
+                   color="${config.label ? config.label.color : '#ffffff'}" 
+                   width="${config.label ? config.label.width : 2.5}"
+                   scale="${config.label ? config.label.scale : '1.5 1.5 1.5'}"
+                   font="mozillavr"
+                   wrap-count="15"
+                   background="color: ${config.label ? config.label.backgroundColor : '#222'}; opacity: ${config.label ? config.label.backgroundOpacity : 0.7}"
+                   padding="0.05">
             </a-text>
         `;
+
+        // Hide label after a few seconds
+        setTimeout(() => {
+            const label = beaker.querySelector('.beaker-label');
+            if (label) label.setAttribute('visible', false);
+        }, config.label ? config.label.displayDuration : 3000);
 
         scene.appendChild(beaker);
 
@@ -194,15 +229,14 @@ class ARChemistryLab {
         }
     }
 
-    checkForMixing(beakerA, beakerDataA) {
-        if (this.isMixing) return;
+    checkForMixing(movingBeakerData) {
+        if (this.isMixing || !movingBeakerData.isPlaced) return;
 
-        const posA = beakerA.getAttribute('position');
+        this.beakers.forEach((otherBeakerData) => {
+            if (movingBeakerData === otherBeakerData || !otherBeakerData.isPlaced) return;
 
-        this.beakers.forEach(beakerB => {
-            if (!beakerB.isPlaced || beakerB.id === beakerDataA.id) return;
-
-            const posB = beakerB.element.getAttribute('position');
+            const posA = movingBeakerData.element.getAttribute('position');
+            const posB = otherBeakerData.element.getAttribute('position');
             const distance = Math.sqrt(
                 Math.pow(posA.x - posB.x, 2) +
                 Math.pow(posA.z - posB.z, 2)
@@ -211,22 +245,32 @@ class ARChemistryLab {
             // If beakers are close enough
             const threshold = window.LAB_CONFIG.interaction.mixingDistance;
             if (distance < threshold) {
-                this.mixChemicals(beakerDataA, beakerB);
+                this.mixChemicals(movingBeakerData, otherBeakerData);
             }
         });
     }
 
-    mixChemicals(beakerDataA, beakerDataB) {
+    mixChemicals(pourerData, targetData) {
+        if (this.isMixing) return;
         this.isMixing = true;
 
-        const pourer = beakerDataA.element;
-        const target = beakerDataB.element;
+        const pourer = pourerData.element;
+        const target = targetData.element;
 
-        const posA = pourer.getAttribute('position');
-        const posB = target.getAttribute('position');
+        if (!pourer || !target) {
+            console.log("Error: Missing beaker elements");
+            this.isMixing = false;
+            return;
+        }
 
-        const dx = posB.x - posA.x;
-        const dz = posB.z - posA.z;
+        // Get static copies of positions
+        const pP = pourer.getAttribute('position');
+        const pT = target.getAttribute('position');
+        const posPourer = { x: pP.x, y: pP.y, z: pP.z };
+        const posTarget = { x: pT.x, y: pT.y, z: pT.z };
+
+        const dx = posTarget.x - posPourer.x;
+        const dz = posTarget.z - posPourer.z;
 
         // Reset held state
         if (this.heldBeaker) {
@@ -236,61 +280,73 @@ class ARChemistryLab {
             this.heldBeakerData = null;
         }
 
-        console.log("Starting animation sequence...");
+        console.log(`Mix Start: ${pourerData.name} -> ${targetData.name}`);
 
-        const angleRad = Math.atan2(dx, dz);
+        const dist = Math.sqrt(dx * dx + dz * dz) || 0.001;
+        const ux = dx / dist;
+        const uz = dz / dist;
 
-        // Stage 1: Move Up
-        pourer.setAttribute('animation__up', {
+        const config = window.LAB_CONFIG.interaction;
+        const pourDisp = config.pourDisplacement || 0.4;
+        const targetPosX = posTarget.x - ux * pourDisp;
+        const targetPosZ = posTarget.z - uz * pourDisp;
+
+        // Stage 1: Move Pourer to Target's vertical level at a distance
+        pourer.setAttribute('animation__move', {
             property: 'position',
-            to: `${posA.x} ${posA.y + 0.3} ${posA.z}`,
-            dur: 800,
-            easing: 'easeOutQuad'
+            to: `${targetPosX} ${posTarget.y} ${targetPosZ}`,
+            dur: config.moveDuration || 1000,
+            easing: 'easeInOutQuad'
         });
 
-        // Stage 2: Tilt towards target
+        // Stage 2: Move Up relative to Target
         setTimeout(() => {
-            const tiltAngle = 55;
+            if (!pourer) return;
+            pourer.setAttribute('animation__up', {
+                property: 'position',
+                to: `${targetPosX} ${posTarget.y + (config.liftHeight || 0.3)} ${targetPosZ}`,
+                dur: config.liftDuration || 800,
+                easing: 'easeOutQuad'
+            });
+        }, config.moveDuration || 1000);
+
+        // Stage 3: Tilt
+        const angleRad = Math.atan2(dx, dz);
+        setTimeout(() => {
+            if (!pourer) return;
+            const tiltAngle = config.tiltAngle || 45;
             const tiltAroundX = Math.cos(angleRad) * tiltAngle;
             const tiltAroundZ = -Math.sin(angleRad) * tiltAngle;
 
             pourer.setAttribute('animation__tilt', {
                 property: 'rotation',
                 to: `${tiltAroundX} 0 ${tiltAroundZ}`,
-                dur: 1000,
+                dur: config.tiltDuration || 1000,
                 easing: 'easeInQuad'
             });
+        }, (config.moveDuration || 1000) + (config.liftDuration || 800));
 
-            pourer.setAttribute('animation__closer', {
-                property: 'position',
-                to: `${posA.x + dx * 0.4} ${posA.y + 0.3} ${posA.z + dz * 0.4}`,
-                dur: 1000,
-                easing: 'easeInQuad'
-            });
-        }, 800);
-
-        const reaction = ReactionEngine.getReaction(beakerDataA.name, beakerDataB.name);
+        const reaction = ReactionEngine.getReaction(pourerData.name, targetData.name);
         this.showReactionEffect(pourer, target, reaction);
         this.showReactionPanel(reaction);
 
         const productPos = {
-            x: (posA.x + posB.x) / 2,
-            y: posB.y,
-            z: (posA.z + posB.z) / 2
+            x: (posPourer.x + posTarget.x) / 2,
+            y: posTarget.y,
+            z: (posPourer.z + posTarget.z) / 2
         };
 
         setTimeout(() => {
-            console.log("Transforming reactants...");
-            if (pourer.parentNode) pourer.parentNode.removeChild(pourer);
-            if (target.parentNode) target.parentNode.removeChild(target);
+            console.log("Reaction Complete: Transforming...");
+            if (pourer && pourer.parentNode) pourer.parentNode.removeChild(pourer);
+            if (target && target.parentNode) target.parentNode.removeChild(target);
 
-            beakerDataA.isPlaced = false;
-            beakerDataB.isPlaced = false;
+            pourerData.isPlaced = false;
+            targetData.isPlaced = false;
 
             this.createProductBeaker(productPos, reaction);
             this.isMixing = false;
-            this.showInstruction("Success! Reaction complete. Tap product to reset.");
-        }, 4000);
+        }, config.reactionDelay || 4000);
     }
 
     createProductBeaker(position, reaction) {
@@ -304,9 +360,29 @@ class ARChemistryLab {
         const config = window.LAB_CONFIG.beaker;
         product.innerHTML = `
             <a-gltf-model src="#salt-model" scale="${config.scale.x} ${config.scale.y} ${config.scale.z}"></a-gltf-model>
-            <a-text value="Product:\n${reaction.products}" position="0 ${config.labelY} 0" align="center" color="white" width="${config.labelWidth}"></a-text>
-            <a-text value="(Tap to Reset Lab)" position="0 -0.05 0" align="center" color="#aaa" width="0.5"></a-text>
+            
+            <!-- Temporary Product Label -->
+            <a-text class="beaker-label"
+                   value="Product:\n${reaction.products}" 
+                   position="0 ${config.label ? config.label.y : -0.2} ${config.label ? config.label.z : 0.2}" 
+                   align="center" 
+                   color="${config.label ? config.label.color : '#ffffff'}" 
+                   width="${config.label ? config.label.width : 2.5}"
+                   scale="${config.label ? config.label.scale : '1.5 1.5 1.5'}"
+                   font="mozillavr"
+                   wrap-count="20"
+                   background="color: ${config.label ? config.label.backgroundColor : '#222'}; opacity: ${config.label ? config.label.backgroundOpacity : 0.7}"
+                   padding="0.05">
+            </a-text>
+
+            <a-text value="(Tap to Reset Lab)" position="0 -0.1 0" align="center" color="#aaa" width="0.8"></a-text>
         `;
+
+        // Hide label after a few seconds
+        setTimeout(() => {
+            const label = product.querySelector('.beaker-label');
+            if (label) label.setAttribute('visible', false);
+        }, config.label ? config.label.displayDuration : 3000);
 
         scene.appendChild(product);
 
@@ -393,9 +469,9 @@ class ARChemistryLab {
                         this.reticle.setAttribute('visible', true);
 
                         // If holding a beaker, move it to reticle position
-                        if (this.heldBeaker && !this.isMixing) {
+                        if (this.heldBeaker && this.heldBeakerData) {
                             this.heldBeaker.setAttribute('position', planeHit.point);
-                            this.checkForMixing(this.heldBeaker, this.heldBeakerData);
+                            this.checkForMixing(this.heldBeakerData);
                         }
                     } else if (!this.heldBeaker) {
                         // Position reticle in front...
