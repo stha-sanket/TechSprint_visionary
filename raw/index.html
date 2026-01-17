@@ -20,7 +20,6 @@
         <a-assets>
             <a-asset-item id="beaker-model" src="assets/models/beaker.glb"></a-asset-item>
         </a-assets>
-
         <a-entity id="rig" position="0 1.6 0">
             <a-camera id="camera" user-height="0" wasd-controls="enabled: false">
                 <a-cursor fuse="false" raycaster="objects: [data-raycastable]; far: 20" visible="false"></a-cursor>
@@ -40,6 +39,7 @@
         <a-entity light="type: directional; intensity: 0.6" position="1 2 1"></a-entity>
     </a-scene>
     <div id="debug-overlay"></div>
+    <script src="js/reactions.js"></script>
     <script src="js/app.js"></script>
 </body>
 
