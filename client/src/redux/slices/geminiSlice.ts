@@ -39,7 +39,7 @@ export const sendMessage = createAsyncThunk(
     }
 
     const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/gemini`,
+      `${import.meta.env.VITE_BACKEND_URL}/api/gemini`,
       formData,
       {
         headers: {
