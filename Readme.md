@@ -2,7 +2,16 @@
 
 ### 🚀 Redefining Education through Immersive Augmented Reality & AI
 
-## 📖 Overview
+## � Table of Contents
+- [Overview](#-overview)
+- [Tech Stack](#️-tech-stack)
+- [Key Features](#-key-features)
+- [Installation & Setup](#️-installation--setup)
+- [Team Members](#-team-members)
+- [Project Structure](#-project-structure)
+
+---
+## �📖 Overview
 
 **Visionary** is an innovative learning platform designed to bridge the gap between abstract concepts and real-world understanding. By leveraging the power of **Augmented Reality (AR)** and **Generative AI**, we provide students with an interactive, hands-on experience in subjects like Biology and Chemistry.
 
