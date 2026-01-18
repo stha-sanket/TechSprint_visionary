@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Learn.AR | Marker-Based Heart Visualization</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <!-- A-Frame and AR.js libraries -->
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+    <style>
+        .arjs-loader {
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: sans-serif;
+        }
+
+        #instruction-overlay {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border-radius: 10px;
+            z-index: 10;
+            text-align: center;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body style="margin: 0px; overflow: hidden;">
+    <!-- Loading Screen -->
+    <div class="arjs-loader">
+        <div>Loading 3D Heart Model...</div>
+    </div>
+
+    <!-- Instructions -->
+    <div id="instruction-overlay">
+        Point your camera at the <strong>pattern-wow</strong> marker<br>
+        <small>(Ensure you have generated the .patt file)</small>
+    </div>
+
+    <a-scene embedded
+        arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+        renderer="logarithmicDepthBuffer: true;" vr-mode-ui="enabled: false">
+
+        <a-assets>
+            <a-asset-item id="heart" src="Beating heart.glb"></a-asset-item>
+        </a-assets>
+
+        <!-- Custom Marker -->
+        <!-- Note: This requires 'pattern-wow.patt' to exist in the same folder.
+             You can generate it here: https://ar-js-org.github.io/AR.js/three.js/examples/marker-training/examples/generator.html -->
+        <a-marker type="pattern" url="pattern-wow.patt">
+            <a-entity gltf-model="#heart" scale="0.5 0.5 0.5" position="0 0 0" rotation="0 0 0" animation-mixer>
+            </a-entity>
+        </a-marker>
+
+        <!-- Fallback Hiro Marker (Self-Identification for quick test) -->
+        <a-marker preset="hiro">
+            <a-entity gltf-model="#heart" scale="0.5 0.5 0.5" position="0 0 0" animation-mixer>
+            </a-entity>
+        </a-marker>
+
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+        window.addEventListener('load', () => {
+            const loader = document.querySelector('.arjs-loader');
+            loader.style.display = 'none';
+        });
+    </script>
+</body>
+
+</html>
