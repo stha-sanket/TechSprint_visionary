@@ -102,6 +102,12 @@ const InorganicReaction: React.FC = () => {
     ];
   }, [currentChapter]);
 
+  const reactionsRef = useRef<any[]>([]);
+  useEffect(() => {
+    reactionsRef.current = REACTIONS;
+    console.log("Updated reactionsRef:", reactionsRef.current);
+  }, [REACTIONS]);
+
   const beakersRef = useRef<any[]>([]);
 
   useEffect(() => {
@@ -374,17 +380,19 @@ const InorganicReaction: React.FC = () => {
       });
     }, config.moveDuration + config.liftDuration);
 
-    const reaction = REACTIONS.find(
+    const reaction = reactionsRef.current.find(
       (r) =>
         r.reactants.some(
-          (name) => name.toLowerCase() === pourerData.name.toLowerCase(),
+          (name: string) =>
+            name.toLowerCase() === pourerData.name.toLowerCase(),
         ) &&
         r.reactants.some(
-          (name) => name.toLowerCase() === targetData.name.toLowerCase(),
+          (name: string) =>
+            name.toLowerCase() === targetData.name.toLowerCase(),
         ),
     );
 
-    console.log("Found reaction:", reaction);
+    console.log("Found reaction from ref:", reaction);
 
     if (reaction) {
       showReactionEffect(posPourer, posTarget, reaction);
