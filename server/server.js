@@ -14,7 +14,7 @@ connectDatabase();
 // Routes
 import studentRoutes from "./routes/student.routes.js";
 import learnRoutes from "./routes/learn.routes.js";
-import geminiRoutes from "./controllers/gemini.controller.js";
+import geminiRoutes from "./routes/gemini.routes.js";
 
 app.use("/api/students", studentRoutes);
 app.use("/api/learn", learnRoutes);
