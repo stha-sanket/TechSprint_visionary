@@ -1,7 +1,20 @@
 import { useNavigate } from "react-router-dom";
+import type { RootState } from "../../redux/store";
+import { useEffect } from "react";
+import { fetchChaptersBySubject } from "../../redux/slices/chapterSlice";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 
 const Chemistry = () => {
+  const dispatch = useAppDispatch();
+
+  const { chapters, loading } = useAppSelector(
+    (state: RootState) => state.chapter,
+  );
   const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(fetchChaptersBySubject("Chemistry"));
+  }, [dispatch]);
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header>
@@ -31,12 +44,16 @@ const Chemistry = () => {
       </div>
 
       <div className="space-y-4">
-        {["Organic Chemistry", "Inorganic Chemistry", "Physical Chemistry"].map(
-          (topic, i) => (
+        {loading ? (
+          <div className="text-center py-10 text-gray-400">
+            Loading chapters...
+          </div>
+        ) : chapters.length > 0 ? (
+          chapters.map((item, i) => (
             <button
-              key={i}
+              key={item.id}
               onClick={() =>
-                topic === "Organic Chemistry" &&
+                item.name === "Neutralization reaction" &&
                 navigate("/dashboard/chemistry/ch1")
               }
               className="bg-gray-200 w-full p-4 rounded-3xl shadow-[8px_8px_16px_rgba(163,177,198,0.6),-8px_-8px_16px_rgba(255,255,255,0.5)] flex justify-between items-center group cursor-pointer active:scale-95 transition-transform"
@@ -47,9 +64,8 @@ const Chemistry = () => {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-700 text-sm">
-                    {topic}
+                    {item.name}
                   </h4>
-                  <p className="text-xs text-gray-400">12 Lessons</p>
                 </div>
               </div>
               <div className="w-8 h-8 rounded-full bg-gray-200 shadow-[inset_-2px_-2px_5px_rgba(255,255,255,0.7),inset_2px_2px_5px_rgba(0,0,0,0.1)] flex items-center justify-center">
@@ -68,7 +84,11 @@ const Chemistry = () => {
                 </svg>
               </div>
             </button>
-          ),
+          ))
+        ) : (
+          <div className="text-center py-10 text-gray-400">
+            No chapters found.
+          </div>
         )}
       </div>
     </div>

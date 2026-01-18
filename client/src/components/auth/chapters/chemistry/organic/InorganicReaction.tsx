@@ -1,6 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./OrganicReaction.css";
+import { useAppDispatch, useAppSelector } from "../../../../../redux/hooks";
+import type { RootState } from "../../../../../redux/store";
+import { fetchChaptersBySubjectAndId } from "../../../../../redux/slices/chapterSlice";
+import { useParams } from "react-router-dom";
 
 declare global {
   namespace React {
@@ -55,51 +59,73 @@ const LAB_CONFIG = {
   },
 };
 
-const REACTIONS = [
-  {
-    reactants: ["HCl", "NaOH"],
-    name: "Neutralization Reaction",
-    products: "NaCl + H2O",
-    description:
-      "Hydrochloric acid reacts with sodium hydroxide to form table salt and water.",
-    effect: "confetti",
-    color: "#ffffff",
-    productModelId: "#salt-model",
-  },
-];
-
-const OrganicReaction: React.FC = () => {
+const InorganicReaction: React.FC = () => {
   const sceneRef = useRef<any>(null);
   const reticleRef = useRef<any>(null);
   const [isARMode, setIsARMode] = useState(false);
-  const [placedBeakers, setPlacedBeakers] = useState(0);
   const placedBeakersRef = useRef(0);
-  const [isMixing, setIsMixing] = useState(false);
   const isMixingRef = useRef(false);
   const [showTutorial, setShowTutorial] = useState(true);
   const [isReactionComplete, setIsReactionComplete] = useState(false);
   const navigate = useNavigate();
 
-  const beakersRef = useRef<any[]>([
-    {
-      id: "A",
-      name: "HCl",
-      color: "#ff6b6b",
-      label: "Acid",
-      isPlaced: false,
-      element: null,
-      modelId: "#acid-model",
-    },
-    {
-      id: "B",
-      name: "NaOH",
-      color: "#4d96ff",
-      label: "Base",
-      isPlaced: false,
-      element: null,
-      modelId: "#base-model",
-    },
-  ]);
+  const { subject, id } = useParams<{ subject: string; id: string }>();
+
+  const dispatch = useAppDispatch();
+
+  const { chapter, loading } = useAppSelector(
+    (state: RootState) => state.chapter,
+  );
+
+  useEffect(() => {
+    if (subject && id) {
+      dispatch(fetchChaptersBySubjectAndId({ subject, id }));
+    }
+  }, [dispatch, subject, id]);
+
+  const currentChapter = chapter[0];
+
+  const REACTIONS = useMemo(() => {
+    if (!currentChapter) return [];
+    return [
+      {
+        reactants: currentChapter.description.reactants,
+        name: currentChapter.description.name,
+        products: currentChapter.description.products,
+        description: currentChapter.description.description,
+        effect: currentChapter.description.effect,
+        color: currentChapter.description.color,
+        productModelId: "#product-model",
+      },
+    ];
+  }, [currentChapter]);
+
+  const beakersRef = useRef<any[]>([]);
+
+  useEffect(() => {
+    if (currentChapter) {
+      beakersRef.current = [
+        {
+          id: "A",
+          name: currentChapter.description.reactants[0],
+          color: "#ff6b6b",
+          label: "Reactant 1",
+          isPlaced: false,
+          element: null,
+          modelId: "#reactant1-model",
+        },
+        {
+          id: "B",
+          name: currentChapter.description.reactants[1],
+          color: "#4d96ff",
+          label: "Reactant 2",
+          isPlaced: false,
+          element: null,
+          modelId: "#reactant2-model",
+        },
+      ];
+    }
+  }, [currentChapter]);
 
   const heldBeakerRef = useRef<any>(null);
   const heldBeakerDataRef = useRef<any>(null);
@@ -155,7 +181,6 @@ const OrganicReaction: React.FC = () => {
 
     const newCount = placedBeakersRef.current + 1;
     placedBeakersRef.current = newCount;
-    setPlacedBeakers(newCount);
 
     if (newCount === 2) {
       showInstruction("Beakers placed. Bring them close to mix.");
@@ -273,7 +298,6 @@ const OrganicReaction: React.FC = () => {
   const mixChemicals = (pourerData: any, targetData: any) => {
     if (isMixingRef.current) return;
     isMixingRef.current = true;
-    setIsMixing(true);
 
     const pourer = pourerData.element;
     const target = targetData.element;
@@ -358,7 +382,6 @@ const OrganicReaction: React.FC = () => {
 
       createProductBeaker(productPos, reaction);
       isMixingRef.current = false;
-      setIsMixing(false);
       setIsReactionComplete(true);
     }, config.reactionDelay);
   };
@@ -605,10 +628,18 @@ const OrganicReaction: React.FC = () => {
       {!isARMode && (
         <div id="loading">
           <h2>🔬 AR Chemistry Lab</h2>
-          <p>Neutralization: HCl + NaOH</p>
-          <button id="start-ar" onClick={startAR}>
-            Start AR Experience
-          </button>
+          {loading ? (
+            <p>Loading lab data...</p>
+          ) : currentChapter ? (
+            <>
+              <p>{currentChapter.name}</p>
+              <button id="start-ar" onClick={startAR}>
+                Start AR Experience
+              </button>
+            </>
+          ) : (
+            <p>Error loading chapter data.</p>
+          )}
         </div>
       )}
 
@@ -618,25 +649,24 @@ const OrganicReaction: React.FC = () => {
         webxr="optionalFeatures: dom-overlay; overlayElement: #ar-ui-container"
         gltf-model="dracoDecoderPath: https://www.gstatic.com/draco/versioned/decoders/1.5.6/;"
       >
-
         {/* GLB Model declarations */}
         <a-assets>
-          <a-asset-item
-            id="beaker-model"
-            src="/assets/models/beaker.glb"
-          ></a-asset-item>
-          <a-asset-item
-            id="acid-model"
-            src="/assets/models/acid_beaker.glb"
-          ></a-asset-item>
-          <a-asset-item
-            id="base-model"
-            src="/assets/models/base_beaker.glb"
-          ></a-asset-item>
-          <a-asset-item
-            id="salt-model"
-            src="/assets/models/salt_beaker.glb"
-          ></a-asset-item>
+          {currentChapter && (
+            <>
+              <a-asset-item
+                id="reactant1-model"
+                src={currentChapter.threeDModels[0]}
+              ></a-asset-item>
+              <a-asset-item
+                id="reactant2-model"
+                src={currentChapter.threeDModels[1]}
+              ></a-asset-item>
+              <a-asset-item
+                id="product-model"
+                src={currentChapter.threeDModels[2]}
+              ></a-asset-item>
+            </>
+          )}
         </a-assets>
 
         <a-entity id="rig" position="0 1.6 0">
@@ -707,4 +737,4 @@ const OrganicReaction: React.FC = () => {
   );
 };
 
-export default OrganicReaction;
+export default InorganicReaction;

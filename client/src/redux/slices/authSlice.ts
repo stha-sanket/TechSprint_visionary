@@ -15,7 +15,7 @@ const initialState: AuthState = {
   error: null,
 };
 
-const APIURL = import.meta.env.VITE_BACKEND_URI;
+export const APIURL = import.meta.env.VITE_BACKEND_URI;
 
 export const loginUser = createAsyncThunk(
   "login/user",
