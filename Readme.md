@@ -18,4 +18,11 @@ Imagine visualizing a beating human heart in 3D right on your desk or witnessing
 - **Redux Toolkit**: State management for application-wide data flow.
 - **React Router Dom**: Seamless navigation within the Single Page Application.
 
+### Backend & AI
+- **Node.js & Express**: High-performance backend runtime and framework.
+- **MongoDB & Mongoose**: Flexible NoSQL database for managing users and learning data.
+- **Google Gemini AI**: Intelligent AI integration for personalized learning and querying.
+- **Cloudinary**: Cloud storage for project assets and media.
+- **JWT & Bcrypt**: Secure authentication and password hashing.
+
 ---
