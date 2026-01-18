@@ -2,6 +2,10 @@ import { useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { type RootState } from "../../redux/store";
 import { sendMessage, clearChat } from "../../redux/slices/geminiSlice";
+import ReactMarkdown from "react-markdown";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 
 const SelfStudy = () => {
   const dispatch = useAppDispatch();
@@ -95,7 +99,7 @@ const SelfStudy = () => {
           </div>
         </div>
 
-        <div className="flex-1 p-4 overflow-y-auto space-y-4">
+        <div className="flex-1 p-4 overflow-y-auto space-y-4 custom-scrollbar">
           {messages.length === 0 ? (
             <div className="flex gap-3">
               <div className="w-8 h-8 bg-gray-900 rounded-full shrink-0 flex items-center justify-center text-white font-bold text-xs shadow-md">
@@ -107,7 +111,7 @@ const SelfStudy = () => {
               </div>
             </div>
           ) : (
-            messages.map((msg, idx) => (
+            messages.map((msg: any, idx: number) => (
               <div
                 key={idx}
                 className={`flex gap-3 ${
@@ -135,7 +139,38 @@ const SelfStudy = () => {
                       className="rounded-lg mb-2 max-w-full h-auto max-h-48 object-contain"
                     />
                   )}
-                  <div className="whitespace-pre-wrap">{msg.content}</div>
+                  <div className="markdown-content">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkMath]}
+                      rehypePlugins={[rehypeKatex]}
+                      components={{
+                        p: ({ children }) => (
+                          <p className="mb-2 last:mb-0">{children}</p>
+                        ),
+                        ul: ({ children }) => (
+                          <ul className="list-disc ml-4 mb-2">{children}</ul>
+                        ),
+                        ol: ({ children }) => (
+                          <ol className="list-decimal ml-4 mb-2">{children}</ol>
+                        ),
+                        li: ({ children }) => (
+                          <li className="mb-1">{children}</li>
+                        ),
+                        code: ({ children }) => (
+                          <code className="bg-gray-100 px-1 rounded text-pink-600 font-mono text-xs">
+                            {children}
+                          </code>
+                        ),
+                        pre: ({ children }) => (
+                          <pre className="bg-gray-900 text-gray-100 p-3 rounded-lg overflow-x-auto my-2 text-xs">
+                            {children}
+                          </pre>
+                        ),
+                      }}
+                    >
+                      {msg.content}
+                    </ReactMarkdown>
+                  </div>
                 </div>
               </div>
             ))
@@ -238,6 +273,27 @@ const SelfStudy = () => {
           </div>
         </div>
       </div>
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(0, 0, 0, 0.1);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(0, 0, 0, 0.2);
+        }
+        .markdown-content p {
+          margin-bottom: 0.5rem;
+        }
+        .markdown-content p:last-child {
+          margin-bottom: 0;
+        }
+      `}</style>
     </div>
   );
 };
