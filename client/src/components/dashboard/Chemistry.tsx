@@ -12,6 +12,8 @@ const Chemistry = () => {
   );
   const navigate = useNavigate();
 
+  console.log(chapters);
+
   useEffect(() => {
     dispatch(fetchChaptersBySubject("Chemistry"));
   }, [dispatch]);
@@ -52,10 +54,9 @@ const Chemistry = () => {
           chapters.map((item, i) => (
             <button
               key={item.id}
-              onClick={() =>
-                item.name === "Neutralization reaction" &&
-                navigate("/dashboard/chemistry/ch1")
-              }
+              onClick={() => {
+                navigate(`/dashboard/chemistry/${item.id}`);
+              }}
               className="bg-gray-200 w-full p-4 rounded-3xl shadow-[8px_8px_16px_rgba(163,177,198,0.6),-8px_-8px_16px_rgba(255,255,255,0.5)] flex justify-between items-center group cursor-pointer active:scale-95 transition-transform"
             >
               <div className="flex items-center gap-4">

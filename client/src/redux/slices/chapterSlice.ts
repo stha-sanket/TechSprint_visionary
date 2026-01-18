@@ -52,7 +52,7 @@ export const fetchChaptersBySubject = createAsyncThunk(
         `${APIURL}/api/learn/subjects/${subject}/chapters`,
       );
       if (!response.data) throw new Error("Network response was not ok");
-      return response.data as Chapter[];
+      return response.data as Chapters[];
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -89,11 +89,7 @@ const chapterSlice = createSlice({
       })
       .addCase(fetchChaptersBySubject.fulfilled, (state, action) => {
         state.loading = false;
-        state.chapters = action.payload.map((ch) => ({
-          id: ch._id,
-          identification: ch.topic,
-          name: ch.name,
-        }));
+        state.chapters = action.payload;
       })
       .addCase(fetchChaptersBySubject.rejected, (state, action) => {
         state.loading = false;
