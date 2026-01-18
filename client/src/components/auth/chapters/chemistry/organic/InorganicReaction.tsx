@@ -69,7 +69,7 @@ const InorganicReaction: React.FC = () => {
   const [isReactionComplete, setIsReactionComplete] = useState(false);
   const navigate = useNavigate();
 
-  const { subject, id } = useParams<{ subject: string; id: string }>();
+  const { chapterId } = useParams<{ chapterId: string }>();
 
   const dispatch = useAppDispatch();
 
@@ -78,10 +78,12 @@ const InorganicReaction: React.FC = () => {
   );
 
   useEffect(() => {
-    if (subject && id) {
-      dispatch(fetchChaptersBySubjectAndId({ subject, id }));
+    if (chapterId) {
+      dispatch(
+        fetchChaptersBySubjectAndId({ subject: "Chemistry", id: chapterId }),
+      );
     }
-  }, [dispatch, subject, id]);
+  }, [dispatch, chapterId]);
 
   const currentChapter = chapter[0];
 

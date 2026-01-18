@@ -67,7 +67,7 @@ export const fetchChaptersBySubjectAndId = createAsyncThunk(
   ) => {
     try {
       const response = await axios.get(
-        `${APIURL}/api/learn/subjects/${subject}/chapters/${id}`,
+        `${APIURL}/api/learn/subject/${subject}/chapters/${id}`,
       );
       if (!response.data) throw new Error("Network response was not ok");
       return response.data as Chapter;
