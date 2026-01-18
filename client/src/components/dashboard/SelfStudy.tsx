@@ -67,7 +67,7 @@ const SelfStudy = () => {
   return (
     <div className="h-full flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Status Bar Timer */}
-      <div className="bg-gray-200 text-gray-700 px-6 py-3 rounded-3xl shadow-[8px_8px_16px_rgba(163,177,198,0.6),-8px_-8px_16px_rgba(255,255,255,0.5)] flex justify-between items-center mb-4 shrink-0">
+      <div className="bg-gray-200 text-gray-700 px-6 py-3  shadow-[8px_8px_16px_rgba(163,177,198,0.6),-8px_-8px_16px_rgba(255,255,255,0.5)] flex justify-between items-center mb-4 shrink-0">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
           <span className="font-medium text-sm">AI Study Assistant</span>

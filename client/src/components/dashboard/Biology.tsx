@@ -2,7 +2,7 @@ import { MOCK_BIOLOGY_CHAPTERS } from "./biology/mockData";
 
 const Biology = () => {
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6 p-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header>
         <h1 className="text-2xl font-bold text-gray-700">Biology</h1>
         <p className="text-gray-400 text-sm">

@@ -18,7 +18,7 @@ const Chemistry = () => {
     dispatch(fetchChaptersBySubject("Chemistry"));
   }, [dispatch]);
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6 p-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header>
         <h1 className="text-2xl font-bold text-gray-700">Chemistry</h1>
         <p className="text-gray-400 text-sm">Explore the world of matter</p>

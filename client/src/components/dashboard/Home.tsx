@@ -1,6 +1,6 @@
 const Home = () => {
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6 p-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-700">Hi Student</h1>
