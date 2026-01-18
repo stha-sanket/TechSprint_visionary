@@ -16,6 +16,7 @@ import SelfStudy from "./components/dashboard/SelfStudy";
 import Profile from "./components/dashboard/Profile";
 import InorganicReaction from "./components/auth/chapters/chemistry/inorganic/InorganicReaction";
 import Assessment from "./components/auth/chapters/chemistry/Assessment";
+import HumanAnatomy from "./components/dashboard/biology/HumanAnatomy";
 
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { AuthProvider } from "./components/auth/AuthContext";
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
           {
             path: "biology",
             element: <Biology />,
+          },
+          {
+            path: "biology/:chapterId",
+            element: <HumanAnatomy />,
           },
           {
             path: "self-study",
