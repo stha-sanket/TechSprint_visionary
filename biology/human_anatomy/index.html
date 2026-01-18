@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human Anatomy</title>
+    <title>Beating Heart | Animated Medical Visualization</title>
     <meta name="description" content="Interactive 3D visualization of a beating human heart with skeletal animation">
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -42,64 +42,13 @@
 
         model-viewer {
             width: 100%;
-            height: 80vh;
+            height: 600px;
             background: transparent;
             border-radius: 15px;
             overflow: hidden;
-            --ar-button-display: block;
         }
 
-        #ar-button {
-            background-color: #fff;
-            border-radius: 20px;
-            border: none;
-            display: block;
-            font-family: inherit;
-            font-size: 14px;
-            color: #1a1a3e;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: 20px;
-            padding: 10px 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-            z-index: 100;
-        }
 
-        #ar-button:active {
-            background-color: #E8EAED;
-        }
-
-        #ar-button:focus {
-            outline: none;
-        }
-
-        #ar-button:focus-visible {
-            outline: 1px solid #4285f4;
-        }
-
-        /* Custom Reticle Styles */
-        #reticle {
-            width: 100px;
-            height: 100px;
-            pointer-events: none;
-        }
-
-        .reticle-ring {
-            stroke: #4285f4;
-            stroke-width: 4;
-            fill: none;
-            stroke-dasharray: 283;
-            stroke-dashoffset: 283;
-            animation: ring-draw 2s ease-out forwards;
-        }
-
-        @keyframes ring-draw {
-            to {
-                stroke-dashoffset: 0;
-            }
-        }
 
         @keyframes pulse {
             0% {
@@ -119,61 +68,21 @@
 
 <body>
     <div class="container">
-        <div class="viewer-section">
-            <model-viewer id="human-anatomy-viewer" src="humananatomy.glb" ar ar-modes="webxr scene-viewer quick-look"
-                camera-controls autoplay shadow-intensity="1.5" exposure="1.2" interaction-prompt="auto"
-                alt="Animated 3D model of a beating human heart" ar-scale="fixed" ar-placement="floor"
-                touch-action="none" loading="eager" reveal="auto" scale="8 8 8">
+        <model-viewer id="heart-model" src="humananatomy.glb" ar ar-modes="webxr scene-viewer quick-look"
+            camera-controls autoplay shadow-intensity="1.2" exposure="1.2" interaction-prompt="auto"
+            alt="Animated 3D model of a beating human heart" scale="50 50 50" ar-scale="auto" ar-placement="floor"
+            touch-action="pan-y" loading="eager" reveal="auto" auto-rotate auto-rotate-delay="1000">
+            <!-- Fallback message for AR -->
+            <div slot="ar-failure" style="display: none;">
+                AR not available on this device
+            </div>
+        </model-viewer>
 
-                <button slot="ar-button" id="ar-button">
-                    View in your space
-                </button>
-
-                <div slot="ar-failure" style="display: none;">
-                    AR not available on this device
-                </div>
-
-                <div id="reticle" slot="reticle">
-                    <svg width="100" height="100" viewBox="0 0 100 100">
-                        <circle class="reticle-ring" cx="50" cy="50" r="45" />
-                        <circle cx="50" cy="50" r="5" fill="#4285f4" />
-                    </svg>
-                </div>
-            </model-viewer>
-        </div>
     </div>
-
-    <script>
-        const modelViewer = document.querySelector('#human-anatomy-viewer');
-        const arButton = document.querySelector('#ar-button');
-
-        // Store the desired final scale from the model-viewer attribute
-        const finalScale = modelViewer.getAttribute('scale') || "8 8 8";
-
-        modelViewer.addEventListener('ar-status', (event) => {
-            if (event.detail.status === 'session-started') {
-                console.log('AR session started');
-                // Hide model using a tiny scale to avoid GL errors on some devices
-                modelViewer.scale = "0.0001 0.0001 0.0001";
-                if (arButton) arButton.textContent = 'Tap to drop model';
-            } else if (event.detail.status === 'object-placed') {
-                console.log('Object has been placed in AR');
-
-                // Show the model at the desired scale
-                modelViewer.scale = finalScale;
-
-                // LOCK POSITION & SCALE
-                modelViewer.interactionPrompt = 'none';
-                modelViewer.arScale = 'fixed';
-
-                // Visual confirmation
-                if (arButton) arButton.textContent = 'Locked & Fixed';
-                setTimeout(() => {
-                    if (arButton) arButton.textContent = 'View in your space';
-                }, 3000);
-            }
-        });
-    </script>
+    </div>
+    </div>
+    </div>
+    </div>
 </body>
 
 </html>
