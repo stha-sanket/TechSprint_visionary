@@ -63,4 +63,19 @@ Imagine visualizing a beating human heart in 3D right on your desk or witnessing
 - **Smriti Basnet**
 - **Priyanka Khatri**
 
+## 📁 Project Structure
+
+```text
+├── client                # React frontend with Vite & Tailwind
+│   ├── src
+│   │   ├── components    # UI Components (Auth, Dashboard, etc.)
+│   │   ├── redux         # State management
+│   │   └── assets        # Images and styles
+├── server                # Node.js & Express backend
+│   ├── controllers       # AI and Business logic
+│   ├── models            # MongoDB schemas
+│   └── routes            # API endpoints
+└── Readme.md             # Project documentation
+```
+
 ---
