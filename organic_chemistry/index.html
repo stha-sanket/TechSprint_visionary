@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Organic Chemistry – Esterification</title>
+
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+
+  <style>
+    body { margin: 0; overflow: hidden; }
+    #instructions {
+      position: fixed;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.85);
+      color: white;
+      padding: 14px 24px;
+      border-radius: 10px;
+      font-family: Arial, sans-serif;
+      z-index: 1000;
+      text-align: center;
+      animation: fadeOut 8s forwards;
+    }
+    @keyframes fadeOut {
+      0%, 70% { opacity: 1; }
+      100% { opacity: 0; pointer-events: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="instructions">
+  <strong>Esterification Reaction</strong><br>
+  <span style="font-size: 0.9em;">
+    🖱️ Click & drag to <strong>MOVE</strong><br>
+    ⇧ Hold SHIFT + drag to <strong>ROTATE</strong><br>
+    Bring molecules together to react!
+  </span>
+</div>
+
+<a-scene background="color: #ECECEC" cursor="rayOrigin: mouse">
+
+  <!-- Camera -->
+  <a-camera position="0 1.4 2.5">
+  </a-camera>
+
+  <!-- Lights -->
+  <a-entity light="type: ambient; intensity: 1.2"></a-entity>
+  <a-entity light="type: directional; intensity: 1; position: 1 2 1"></a-entity>
+
+  <!-- =============================
+       Carboxylic Acid
+       ============================= -->
+  <a-entity id="acid"
+            class="reactant"
+            chemical="acid"
+            draggable
+            rotatable
+            position="-1.2 0.4 -1.5">
+
+    <!-- Molecule -->
+    <a-entity gltf-model="/static/models/carboxylic_acid.glb"
+              scale="0.015 0.015 0.015">
+    </a-entity>
+
+    <!-- Label (rotates with molecule) -->
+    <a-text value="Carboxylic Acid\n(R–COOH)"
+            position="0 0.35 0"
+            align="center"
+            side="double"
+            scale="0.35 0.35 0.35"
+            color="#2C3E50"
+            background="color: white; opacity: 0.9"
+            backgroundPadding="8 4">
+    </a-text>
+  </a-entity>
+
+  <!-- =============================
+       Ethanol
+       ============================= -->
+  <a-entity id="alcohol"
+            class="reactant"
+            chemical="alcohol"
+            draggable
+            rotatable
+            position="1.2 0.4 -1.5">
+
+    <!-- Molecule -->
+    <a-entity gltf-model="/static/models/ethanol_ethyl_alcohol.glb"
+              scale="0.3 0.3 0.3">
+    </a-entity>
+
+    <!-- Label -->
+    <a-text value="Ethanol\n(C₂H₅OH)"
+            position="0 0.35 0"
+            align="center"
+            side="double"
+            scale="0.35 0.35 0.35"
+            color="#2C3E50"
+            background="color: white; opacity: 0.9"
+            backgroundPadding="8 4">
+    </a-text>
+  </a-entity>
+
+</a-scene>
+
+<!-- Scripts -->
+<script src="/static/js/drag.js"></script>
+<script src="/static/js/reactions.js"></script>
+
+<!-- Free rotation component -->
+<script>
+// Rotation component - Hold SHIFT and drag to rotate
+AFRAME.registerComponent('rotatable', {
+  init() {
+    this.isRotating = false;
+    this.lastX = 0;
+    this.lastY = 0;
+
+    this.onDown = this.onDown.bind(this);
+    this.onMove = this.onMove.bind(this);
+    this.onUp = this.onUp.bind(this);
+
+    this.el.addEventListener('mousedown', this.onDown);
+    this.el.addEventListener('touchstart', this.onDown, { passive: false });
+
+    console.log('✅ Rotatable ready:', this.el.id);
+  },
+
+  onDown(evt) {
+    // Only rotate if SHIFT is pressed
+    if (!evt.shiftKey && !evt.touches) return;
+
+    evt.preventDefault();
+    evt.stopPropagation();
+
+    // Global lock for rotation
+    if (window._activeRotate && window._activeRotate !== this) return;
+    window._activeRotate = this;
+
+    this.isRotating = true;
+
+    let clientX, clientY;
+    if (evt.touches && evt.touches.length) {
+      clientX = evt.touches[0].clientX;
+      clientY = evt.touches[0].clientY;
+    } else {
+      clientX = evt.clientX;
+      clientY = evt.clientY;
+    }
+
+    this.lastX = clientX;
+    this.lastY = clientY;
+
+    window.addEventListener('mousemove', this.onMove);
+    window.addEventListener('mouseup', this.onUp);
+    window.addEventListener('touchmove', this.onMove, { passive: false });
+    window.addEventListener('touchend', this.onUp);
+
+    console.log('🔄 Started rotating:', this.el.id);
+  },
+
+  onMove(evt) {
+    if (!this.isRotating) return;
+
+    evt.preventDefault();
+
+    let clientX, clientY;
+    if (evt.touches && evt.touches.length) {
+      clientX = evt.touches[0].clientX;
+      clientY = evt.touches[0].clientY;
+    } else {
+      clientX = evt.clientX;
+      clientY = evt.clientY;
+    }
+
+    const dx = clientX - this.lastX;
+    const dy = clientY - this.lastY;
+
+    // Rotate around Y axis (horizontal movement)
+    this.el.object3D.rotation.y += dx * 0.01;
+    // Rotate around X axis (vertical movement)
+    this.el.object3D.rotation.x += dy * 0.01;
+
+    this.lastX = clientX;
+    this.lastY = clientY;
+  },
+
+  onUp() {
+    if (!this.isRotating) return;
+
+    this.isRotating = false;
+    window._activeRotate = null;
+
+    window.removeEventListener('mousemove', this.onMove);
+    window.removeEventListener('mouseup', this.onUp);
+    window.removeEventListener('touchmove', this.onMove);
+    window.removeEventListener('touchend', this.onUp);
+
+    console.log('✋ Stopped rotating:', this.el.id);
+  },
+
+  remove() {
+    this.el.removeEventListener('mousedown', this.onDown);
+    this.el.removeEventListener('touchstart', this.onDown);
+    window.removeEventListener('mousemove', this.onMove);
+    window.removeEventListener('mouseup', this.onUp);
+    window.removeEventListener('touchmove', this.onMove);
+    window.removeEventListener('touchend', this.onUp);
+  }
+});
+
+// Debug logging
+console.log('🧪 AR Chemistry Lab initialized');
+setTimeout(() => {
+  const reactants = document.querySelectorAll('.reactant');
+  console.log('📊 Total reactants:', reactants.length);
+  reactants.forEach(r => console.log('  -', r.id));
+}, 1000);
+</script>
+
+</body>
+</html>
