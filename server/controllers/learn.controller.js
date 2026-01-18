@@ -51,7 +51,10 @@ export const getChapterById = async (req, res) => {
     const { chapterId } = req.params;
     const { subjectName } = req.params;
     const cleanId = chapterId.split("_")[1];
-    const chapter = await Chapter.findOne({chapterNumber: cleanId, subject: subjectName});
+    const chapter = await Chapter.findOne({
+      chapterNumber: cleanId,
+      subject: subjectName,
+    });
     if (!chapter) {
       return res.status(404).json({ message: "Chapter not found" });
     }
@@ -81,21 +84,13 @@ export const getAssessmentByChapter = async (req, res) => {
 
 export const createAssessment = async (req, res) => {
   try {
-    const {
-      name,
-      description,
-      chapterNumber,
-      subject,
-      questions,
-      fillInTheBlanks,
-    } = req.body;
+    const { name, description, chapterNumber, subject, questions } = req.body;
     const assessment = await Assessment.create({
       name,
       description,
       chapterNumber,
       subject,
       questions,
-      fillInTheBlanks,
     });
     res.status(201).json(assessment);
   } catch (error) {

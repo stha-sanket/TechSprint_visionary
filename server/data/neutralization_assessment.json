@@ -1,0 +1,91 @@
+{
+  "name": "Neutralization Assessment",
+  "description": "Assessment for Neutralization Reactions",
+  "chapterNumber": 1,
+  "subject": "Chemistry",
+  "questions": [
+    {
+      "question": "Why do factories prefer Magnesium Hydroxide over Sodium Hydroxide for treating acidic lake water?",
+      "options": [
+        {
+          "option": "It turns the water into a better fuel source.",
+          "isCorrect": false
+        },
+        {
+          "option": "Its low solubility prevents the pH from accidentally rising too high (over-alkalizing).",
+          "isCorrect": true
+        },
+        {
+          "option": "It is a liquid that dissolves faster than any other base.",
+          "isCorrect": false
+        },
+        {
+          "option": "It adds oxygen to the water for the fish to breathe.",
+          "isCorrect": false
+        }
+      ],
+      "answer": "B (Magnesium Hydroxide is self-limiting and prevents over-alkalization, unlike Sodium Hydroxide)."
+    },
+    {
+      "question": "As food moves from the stomach to the small intestine, the environment must shift from pH 2 to pH 8. What is the main reason for this neutralization?",
+      "options": [
+        {
+          "option": "To stop the food from moving too quickly.",
+          "isCorrect": false
+        },
+        {
+          "option": "To allow intestinal enzymes to function and prevent \"burning\" the intestine wall.",
+          "isCorrect": true
+        },
+        {
+          "option": "To help the body store more acid for later use.",
+          "isCorrect": false
+        },
+        {
+          "option": "To kill off all beneficial gut bacteria.",
+          "isCorrect": false
+        }
+      ],
+      "answer": "B (Enzymes in the small intestine require an alkaline environment to function)."
+    },
+    {
+      "question": "In nanomaterial synthesis, the exothermic nature of neutralization is its most valuable trait. What does this mean in a practical sense?",
+      "options": [
+        {
+          "option": "The reaction absorbs heat from the room to stay cold.",
+          "isCorrect": false
+        },
+        { "option": "The reaction creates a vacuum.", "isCorrect": false },
+        {
+          "option": "The reaction releases the heat energy needed to transform metal precursors.",
+          "isCorrect": true
+        },
+        {
+          "option": "The reaction creates a magnetic field.",
+          "isCorrect": false
+        }
+      ],
+      "answer": "C (Exothermic reactions release heat energy, which can be useful in synthesis)."
+    },
+    {
+      "question": "In a titration, you know neutralization is complete at the Equivalence Point, but you visually see this happen when the pH indicator __________.",
+      "options": [
+        { "option": "decreases pH", "isCorrect": false },
+        { "option": "increases temperature", "isCorrect": false },
+        { "option": "increases molality", "isCorrect": false },
+        { "option": "changes color", "isCorrect": true }
+      ],
+      "answer": "D (Indicators change color at the endpoint)."
+    },
+    {
+      "question": "Farmers use Calcium Carbonate to treat \"sour\" soil because it neutralizes the acid and releases __________ gas as a byproduct.",
+      "options": [
+        { "option": "Carbon trioxide", "isCorrect": false },
+        { "option": "Carbon dioxide", "isCorrect": true },
+        { "option": "Carbon monoxide", "isCorrect": false },
+        { "option": "Limestone", "isCorrect": false }
+      ],
+      "answer": "B (Carbon dioxide is released when carbonates react with acids)."
+    }
+  ]
+}
