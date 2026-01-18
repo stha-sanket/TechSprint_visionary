@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,7 @@
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    
+
     <style>
         * {
             margin: 0;
@@ -41,52 +42,91 @@
 
         model-viewer {
             width: 100%;
-            height: 600px;
+            height: 80vh;
             background: transparent;
             border-radius: 15px;
             overflow: hidden;
+            --ar-button-display: block;
         }
 
+        #ar-button {
+            background-color: #fff;
+            border-radius: 20px;
+            border: none;
+            display: block;
+            font-family: inherit;
+            font-size: 14px;
+            color: #1a1a3e;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 20px;
+            padding: 10px 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            z-index: 100;
+        }
 
+        #ar-button:active {
+            background-color: #E8EAED;
+        }
+
+        #ar-button:focus {
+            outline: none;
+        }
+
+        #ar-button:focus-visible {
+            outline: 1px solid #4285f4;
+        }
 
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-                <model-viewer 
-                    id="Human Anatomy"
-                    src="humananatomy.glb"
-                    ar
-                    ar-modes="webxr scene-viewer quick-look"
-                    camera-controls
-                    autoplay
-                    shadow-intensity="1.2"
-                    exposure="1.2"
-                    interaction-prompt="auto"
-                    alt="Animated 3D model of a beating human heart"
-                    ar-scale="auto"
-                    ar-placement="floor"
-                    touch-action="pan-y"
-                    loading="eager"
-                    reveal="auto"
-                    auto-rotate
-                    auto-rotate-delay="1000">
-                    <!-- Fallback message for AR -->
-                    <div slot="ar-failure" style="display: none;">
-                        AR not available on this device
-                    </div>
-                </model-viewer>
+        <div class="viewer-section">
+            <model-viewer id="human-anatomy-viewer" src="humananatomy.glb" ar ar-modes="webxr scene-viewer quick-look"
+                camera-controls autoplay shadow-intensity="1.5" exposure="1.2" interaction-prompt="auto"
+                alt="Animated 3D model of a beating human heart" ar-scale="fixed" ar-placement="floor"
+                touch-action="none" loading="eager" reveal="auto" scale="8 8 8">
 
-                    </div>
+                <button slot="ar-button" id="ar-button">
+                    View in your space
+                </button>
+
+                <div slot="ar-failure" style="display: none;">
+                    AR not available on this device
                 </div>
-            </div>
+            </model-viewer>
         </div>
     </div>
+
+    <script>
+        const modelViewer = document.querySelector('#human-anatomy-viewer');
+
+        modelViewer.addEventListener('ar-status', (event) => {
+            if (event.detail.status === 'session-started') {
+                console.log('AR session started');
+            } else if (event.detail.status === 'object-placed') {
+                console.log('Object has been placed in AR');
+                // Lock interaction once placed to prevent unintentional sliding
+                modelViewer.interactionPrompt = 'none';
+            }
+        });
+    </script>
 </body>
+
 </html>
