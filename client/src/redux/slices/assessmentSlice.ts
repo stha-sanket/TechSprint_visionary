@@ -49,7 +49,7 @@ export const fetchAssessment = createAsyncThunk(
   ) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/learn/subjects/${subjectId}/chapters/${chapterNumber}/assessment`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/learn/subjects/${subjectId}/chapters/${chapterNumber}/assessment`,
       );
       return response.data;
     } catch (error: any) {
