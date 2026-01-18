@@ -8,12 +8,12 @@ import {
 } from "@react-three/drei";
 import { useParams, useNavigate } from "react-router-dom";
 import { MOCK_BIOLOGY_CHAPTERS } from "./mockData";
-import { XR, createXRStore } from "@react-three/xr";
+import { XR, createXRStore, IfInSessionMode } from "@react-three/xr";
 
 // Component to load and display the GLTF model
-const Model = ({ url }: { url: string }) => {
+const Model = ({ url, scale }: { url: string; scale: number }) => {
   const { scene } = useGLTF(url);
-  return <primitive object={scene} scale={1.5} />;
+  return <primitive object={scene} scale={scale} />;
 };
 
 const store = createXRStore();
@@ -77,18 +77,24 @@ const HumanAnatomy = () => {
         <Canvas>
           <XR store={store}>
             <PerspectiveCamera makeDefault position={[0, 0, 5]} />
-            <OrbitControls
-              enablePan={true}
-              enableZoom={true}
-              enableRotate={true}
-            />
+
+            <IfInSessionMode deny={["immersive-ar", "immersive-vr"]}>
+              <OrbitControls
+                enablePan={true}
+                enableZoom={true}
+                enableRotate={true}
+              />
+            </IfInSessionMode>
 
             <ambientLight intensity={0.5} />
             <directionalLight position={[10, 10, 5]} intensity={1} />
 
             <Suspense fallback={null}>
               {data.threeDModels.length > 0 ? (
-                <Model url={data.threeDModels[0]} />
+                <Model
+                  url={data.threeDModels[0]}
+                  scale={chapterId === "human-anatomy" ? 100 : 15}
+                />
               ) : (
                 <mesh rotation={[0, 0, 0]}>
                   <boxGeometry args={[2, 2, 2]} />
