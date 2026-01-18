@@ -1,0 +1,20 @@
+# Title: AR based Learning System with Ai
+
+# Project Description
+
+---
+
+# TechStack Used:
+
+- ReactJS
+- Three.js
+- AR.js
+
+---
+
+### Team Member:
+
+- Sanket Shrestha
+- Prashant Adhikari
+- Smriti Basnet
+- Priyanka Khatri

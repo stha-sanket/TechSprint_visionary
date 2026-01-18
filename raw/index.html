@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>AR Chemistry Lab</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-xr@latest/dist/aframe-xr.min.js"></script>
+    <script src="https://www.gstatic.com/draco/versioned/decoders/1.5.6/draco_decoder.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- AR UI Layer (WebXR DOM Overlay) -->
+    <div id="ar-ui-container">
+        <!-- AR Controls -->
+        <div id="ar-controls" style="display: none;">
+            <button id="restart-lab" class="ar-btn" title="Restart Lab">
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                    <path d="M21 3v5h-5"></path>
+                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                    <path d="M3 21v-5h5"></path>
+                </svg>
+                <span class="text">Restart</span>
+            </button>
+        </div>
+
+        <!-- Debug Overlay -->
+        <div id="debug-overlay"></div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loading">
+        <h2>🔬 AR Chemistry Lab</h2>
+        <p>Allow camera access to start</p>
+        <button id="start-ar">Start AR Experience</button>
+    </div>
+
+    <!-- AR Scene -->
+    <a-scene xr-mode-ui="enabled: false" webxr="optionalFeatures: dom-overlay; overlayElement: #ar-ui-container"
+        gltf-model="dracoDecoderPath: https://www.gstatic.com/draco/versioned/decoders/1.5.6/;">
+        <a-assets>
+            <a-asset-item id="beaker-model" src="assets/models/beaker.glb"></a-asset-item>
+            <a-asset-item id="acid-model" src="assets/models/acid_beaker.glb"></a-asset-item>
+            <a-asset-item id="base-model" src="assets/models/base_beaker.glb"></a-asset-item>
+            <a-asset-item id="salt-model" src="assets/models/salt_beaker.glb"></a-asset-item>
+        </a-assets>
+
+        <!-- Camera -->
+        <a-entity id="rig" position="0 1.6 0">
+            <a-camera id="camera" user-height="0" wasd-controls="enabled: false">
+                <a-cursor fuse="false" raycaster="objects: .hit-box, #ar-plane; far: 20" visible="false"></a-cursor>
+            </a-camera>
+        </a-entity>
+
+        <!-- AR Content Container -->
+        <a-entity id="ar-content"></a-entity>
+        <a-entity id="ar-plane" class="ar-plane" data-raycastable geometry="primitive: plane; width: 50; height: 50"
+            rotation="-90 0 0" position="0 0 0"
+            material="opacity: 0.01; color: #444; transparent: true; visible: false"></a-entity>
+
+        <!-- Placement Reticle -->
+        <a-ring id="reticle" radius-inner="0.2" radius-outer="0.25" rotation="-90 0 0" color="#3498db" visible="false"
+            animation="property: scale; to: 1.1 1.1 1.1; dir: alternate; dur: 1000; loop: true"></a-ring>
+
+        <!-- UI Overlay -->
+        <a-entity id="ui" position="0 0 -2">
+            <a-text id="instruction" value="Tap to place beakers" position="0 1.5 0" color="white"
+                align="center"></a-text>
+            <a-plane id="reaction-panel" color="#222" opacity="0.9" position="0 -0.5 0" width="1.5" height="0.8"
+                visible="false">
+                <a-text id="reaction-text" color="white" align="center" width="1.4"></a-text>
+            </a-plane>
+        </a-entity>
+
+        <!-- Lights -->
+        <a-entity light="type: ambient; intensity: 0.8"></a-entity>
+        <a-entity light="type: directional; intensity: 0.6" position="1 2 1"></a-entity>
+    </a-scene>
+
+    <!-- Debug Overlay removed from here, moved to ar-ui-container -->
+
+    <script src="js/config.js"></script>
+    <script src="js/reactions.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
