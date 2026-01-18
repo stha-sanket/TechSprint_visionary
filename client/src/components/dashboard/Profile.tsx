@@ -14,7 +14,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6 p-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <header className="flex flex-col items-center pt-4">
         <div className="w-24 h-24 bg-linear-to-br from-blue-400 to-blue-500 rounded-3xl flex items-center justify-center text-white font-bold text-3xl shadow-[8px_8px_16px_rgba(163,177,198,0.6),-8px_-8px_16px_rgba(255,255,255,0.5)] mb-4">
           {user?.name?.charAt(0) || "S"}

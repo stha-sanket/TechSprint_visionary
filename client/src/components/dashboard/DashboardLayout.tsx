@@ -9,7 +9,7 @@ const DashboardLayout = () => {
   return (
     <div className="w-screen h-screen bg-[#e0e5ec] flex flex-col relative">
       {/* Main Content Area */}
-      <div className="flex-1 p-6 overflow-y-auto pb-24 scrollbar-hide">
+      <div className="flex-1 overflow-y-auto pb-24 scrollbar-hide">
         <Outlet />
       </div>
 
