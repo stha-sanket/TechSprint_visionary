@@ -57,7 +57,7 @@ const router = createBrowserRouter([
             element: <InorganicReaction />,
           },
           {
-            path: "chemistry/assessment/:ass",
+            path: "chemistry/assessment/:chapterId",
             element: <Assessment />,
           },
           {

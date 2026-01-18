@@ -23,7 +23,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (token && !user) {
       dispatch(getMe());
     }
-  }, [dispatch, token, user]);
+  }, [token, user]);
 
   const value = {
     isAuthenticated: !!token && !!user,

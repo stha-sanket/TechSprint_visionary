@@ -20,13 +20,22 @@ C) The reaction releases the heat energy needed to transform metal precursors.
 D) The reaction creates a magnetic field.
 
 Fill in the Blanks
-In a titration, you know neutralization is complete at the Equivalence Point, but you visually see this happen when the pH __________ changes color.
+In a titration, you know neutralization is complete at the Equivalence Point, but you visually see this happen when the pH indicator __________.
+A) decreases pH
+B) increases temperature
+C) increases molality
+D) changes color
 
 Farmers use Calcium Carbonate to treat "sour" soil because it neutralizes the acid and releases __________ gas as a byproduct.
+A) Carbon trioxide
+B) Carbon dioxide
+C) Carbon monoxide
+D) Limestone
+
 Quick Check (Answers)
-B (Safety—it won't "overshoot" the pH).
-B (Enzyme activity and protection).
-C (It provides the heat energy).
-Indicator (like phenolphthalein).
-Carbon dioxide (CO₂).
+1. B (Magnesium Hydroxide is self-limiting and prevents over-alkalization, unlike Sodium Hydroxide).
+2. B (Enzymes in the small intestine require an alkaline environment to function).
+3. C (Exothermic reactions release heat energy, which can be useful in synthesis).
+4. D (Indicators change color at the endpoint).
+5. B (Carbon dioxide is released when carbonates react with acids).
 

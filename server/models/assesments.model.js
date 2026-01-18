@@ -6,6 +6,7 @@ const assessmentSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  
   description: {
     type: String,
     required: true,
@@ -40,20 +41,6 @@ const assessmentSchema = new mongoose.Schema({
           },
         },
       ],
-      answer: {
-        type: String,
-        required: true,
-        trim: true,
-      },
-    },
-  ],
-  fillInTheBlanks: [
-    {
-      question: {
-        type: String,
-        required: true,
-        trim: true,
-      },
       answer: {
         type: String,
         required: true,
