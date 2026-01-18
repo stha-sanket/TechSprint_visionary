@@ -55,7 +55,7 @@ const Chemistry = () => {
             <button
               key={item.id}
               onClick={() => {
-                navigate(`/dashboard/chemistry/assessment/${i + 1}`);
+                navigate(`/dashboard/chemistry/${item.id}`);
               }}
               className="bg-gray-200 w-full p-4 rounded-3xl shadow-[8px_8px_16px_rgba(163,177,198,0.6),-8px_-8px_16px_rgba(255,255,255,0.5)] flex justify-between items-center group cursor-pointer active:scale-95 transition-transform"
             >
