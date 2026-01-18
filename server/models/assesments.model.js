@@ -47,20 +47,6 @@ const assessmentSchema = new mongoose.Schema({
       },
     },
   ],
-  fillInTheBlanks: [
-    {
-      question: {
-        type: String,
-        required: true,
-        trim: true,
-      },
-      answer: {
-        type: String,
-        required: true,
-        trim: true,
-      },
-    },
-  ],
 });
 
 const Assessment = mongoose.model("Assessment", assessmentSchema);
