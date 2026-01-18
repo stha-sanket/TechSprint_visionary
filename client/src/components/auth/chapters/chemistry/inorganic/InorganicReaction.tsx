@@ -589,7 +589,9 @@ const InorganicReaction: React.FC = () => {
             <button
               id="go-to-assessment"
               className="ar-btn assessment-btn"
-              onClick={() => navigate("/dashboard/chemistry/assessment")}
+              onClick={() =>
+                navigate(`/dashboard/chemistry/assessment/${chapterId}`)
+              }
             >
               <svg
                 className="icon-svg"
