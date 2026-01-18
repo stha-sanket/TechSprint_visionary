@@ -43,7 +43,9 @@ export const registerStudent = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      number,
+      number:
+        number ||
+        Math.floor(1000000000 + Math.random() * 9000000000).toString(),
     });
 
     if (student) {
@@ -51,7 +53,7 @@ export const registerStudent = async (req, res) => {
         _id: student._id,
         name: student.name,
         email: student.email,
-        number: "0000000000",
+        number: student.number,
         token: generateToken(student._id, "30d"),
       });
     } else {
